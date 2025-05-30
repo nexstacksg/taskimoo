@@ -6,7 +6,7 @@ A full-stack application template with web, mobile, admin, and backend component
 
 This project consists of four main applications:
 
-- **app-be**: Express.js backend API with Prisma ORM and PostgreSQL
+- **app-be**: Express.js backend API with Prisma ORM and SQLite (developement) | PostgreSQL for Production
 - **app-web**: Next.js web application
 - **app-mobile**: React Native mobile app with Expo
 - **app-admin**: Next.js admin dashboard
