@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { ErrorCode, HttpStatus, ApiErrorResponse } from "../../models";
 
 export class ApiError extends Error {
