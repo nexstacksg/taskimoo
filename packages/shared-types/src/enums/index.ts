@@ -1,0 +1,12 @@
+export enum UserRole {
+  SUPER_ADMIN = "SUPER_ADMIN",
+  MANAGER = "MANAGER",
+  USER = "USER",
+}
+
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  PENDING_VERIFICATION = "PENDING_VERIFICATION",
+}

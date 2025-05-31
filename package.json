@@ -1,0 +1,34 @@
+{
+  "name": "app-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "bun run build:be && bun run build:web && bun run build:admin",
+    "build:be": "cd gm-be && bun run build",
+    "build:web": "cd gm-web && bun run build",
+    "build:admin": "cd gm-admin && bun run build",
+    "lint": "bun run lint:be && bun run lint:web && bun run lint:admin",
+    "lint:be": "cd gm-be && bun run lint",
+    "lint:web": "cd gm-web && bun run lint",
+    "lint:admin": "cd gm-admin && bun run lint",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "gm-be/**/*.{ts,js}": [
+      "cd gm-be && bun run lint",
+      "cd gm-be && bun run build"
+    ],
+    "gm-web/**/*.{ts,tsx,js,jsx}": [
+      "cd gm-web && bun run lint",
+      "cd gm-web && bun run build"
+    ],
+    "gm-admin/**/*.{ts,tsx,js,jsx}": [
+      "cd gm-admin && bun run lint",
+      "cd gm-admin && bun run build"
+    ]
+  }
+}

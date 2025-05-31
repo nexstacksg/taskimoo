@@ -1,12 +1,12 @@
-import { Router } from 'express';
-import * as authController from '../../../controllers/auth/authController';
-import { authenticate } from '../../../middleware/auth/authenticate';
-import { validate } from '../../../middleware/validation/validationMiddleware';
+import { Router } from "express";
+import * as authController from "../../../controllers/auth/authController";
+import { authenticate } from "../../../middleware/auth/authenticate";
+import { validate } from "../../../middleware/validation/validationMiddleware";
 import {
   registerSchema,
   loginSchema,
-  refreshTokenSchema
-} from '../../../middleware/validation/schemas/authSchemas';
+  refreshTokenSchema,
+} from "../../../middleware/validation/schemas/authSchemas";
 
 const router = Router();
 
@@ -46,7 +46,7 @@ const router = Router();
  *       409:
  *         description: User already exists
  */
-router.post('/register', registerSchema, validate, authController.register);
+router.post("/register", registerSchema, validate, authController.register);
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ router.post('/register', registerSchema, validate, authController.register);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', loginSchema, validate, authController.login);
+router.post("/login", loginSchema, validate, authController.login);
 
 /**
  * @swagger
@@ -103,7 +103,12 @@ router.post('/login', loginSchema, validate, authController.login);
  *       401:
  *         description: Invalid refresh token
  */
-router.post('/refresh', refreshTokenSchema, validate, authController.refreshToken);
+router.post(
+  "/refresh",
+  refreshTokenSchema,
+  validate,
+  authController.refreshToken
+);
 
 /**
  * @swagger
@@ -119,7 +124,7 @@ router.post('/refresh', refreshTokenSchema, validate, authController.refreshToke
  *       401:
  *         description: Unauthorized
  */
-router.post('/logout', authenticate, authController.logout);
+router.post("/logout", authenticate, authController.logout);
 
 /**
  * @swagger
@@ -135,7 +140,7 @@ router.post('/logout', authenticate, authController.logout);
  *       401:
  *         description: Unauthorized
  */
-router.get('/profile', authenticate, authController.getProfile);
+router.get("/profile", authenticate, authController.getProfile);
 
 /**
  * @swagger
@@ -161,7 +166,7 @@ router.get('/profile', authenticate, authController.getProfile);
  *       400:
  *         description: Invalid token
  */
-router.post('/verify-email', authController.verifyEmail);
+router.post("/verify-email", authController.verifyEmail);
 
 /**
  * @swagger
@@ -186,7 +191,7 @@ router.post('/verify-email', authController.verifyEmail);
  *       200:
  *         description: Password reset email sent if email exists
  */
-router.post('/request-password-reset', authController.requestPasswordReset);
+router.post("/request-password-reset", authController.requestPasswordReset);
 
 /**
  * @swagger
@@ -217,6 +222,6 @@ router.post('/request-password-reset', authController.requestPasswordReset);
  *       400:
  *         description: Invalid or expired token
  */
-router.post('/reset-password', authController.resetPassword);
+router.post("/reset-password", authController.resetPassword);
 
 export default router;

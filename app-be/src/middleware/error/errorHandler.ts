@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { ErrorCode, HttpStatus, ApiErrorResponse } from '../../models';
+import { Request, Response, NextFunction } from "express";
+import { ErrorCode, HttpStatus, ApiErrorResponse } from "../../models";
 
 export class ApiError extends Error {
   statusCode: number;
@@ -7,13 +7,13 @@ export class ApiError extends Error {
   details?: any;
 
   constructor(
-    message: string, 
-    statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR, 
-    code: string = ErrorCode.INTERNAL_ERROR, 
+    message: string,
+    statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR,
+    code: string = ErrorCode.INTERNAL_ERROR,
     details?: any
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.statusCode = statusCode;
     this.code = code;
     this.details = details;
@@ -23,29 +23,28 @@ export class ApiError extends Error {
 export const errorHandler = (
   error: ApiError,
   req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ): void => {
   const statusCode = error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
-  const message = error.message || 'Internal Server Error';
+  const message = error.message || "Internal Server Error";
   const code = error.code || ErrorCode.INTERNAL_ERROR;
 
-  console.error('Error:', {
+  console.error("Error:", {
     message: error.message,
     stack: error.stack,
     statusCode,
     path: req.path,
-    method: req.method
+    method: req.method,
   });
 
   const errorResponse: ApiErrorResponse = {
     code,
     message,
     details: error.details,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   res.status(statusCode).json({
-    error: errorResponse
+    error: errorResponse,
   });
 };

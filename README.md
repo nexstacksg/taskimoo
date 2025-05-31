@@ -1,156 +1,236 @@
-# App Template
+# App Template - Full-Stack Application Template
 
-A full-stack application template with web, mobile, admin, and backend components.
+A modern full-stack application template with authentication and user management. Built with Next.js, Express.js, React Native, and TypeScript.
 
-## Architecture
+## 🏗️ Monorepo Structure
 
-This project consists of four main applications:
+```
+app-template/
+├── packages/
+│   └── shared-types/          # Shared TypeScript types and interfaces
+├── app-be/                    # Backend API (Express.js + TypeScript + Prisma)
+├── app-web/                   # Customer web portal (Next.js)
+├── app-admin/                 # Admin portal (Next.js)
+├── app-mobile/                # Mobile app (React Native/Expo)
+└── docs/                      # Documentation files
+    ├── CLAUDE.md             # AI assistant instructions
+    ├── architecture.md       # System architecture
+    ├── developer.md          # Developer guide
+    └── project.md            # Project overview
+```
 
-- **app-be**: Express.js backend API with Prisma ORM and SQLite (developement) | PostgreSQL for Production
-- **app-web**: Next.js web application
-- **app-mobile**: React Native mobile app with Expo
-- **app-admin**: Next.js admin dashboard
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- Bun (recommended) or npm/yarn
-- PostgreSQL database
+- Node.js 18+ or Bun 1.0+
+- SQLite (for development)
+- iOS/Android development environment (for mobile app)
 
-### Backend Setup (app-be)
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/app-template.git
+   cd app-template
+   ```
+
+2. **Install dependencies for each app**
+
+   **Backend API:**
+   ```bash
+   cd app-be
+   bun install
+   cp .env.example .env  # Configure your environment variables
+   bun run prisma:migrate
+   bun run prisma:seed
+   ```
+
+   **Web Portal:**
+   ```bash
+   cd app-web
+   bun install
+   ```
+
+   **Admin Portal:**
+   ```bash
+   cd app-admin
+   bun install
+   ```
+
+   **Mobile App:**
+   ```bash
+   cd app-mobile
+   bun install
+   ```
+
+### Running the Applications
+
+1. **Start the Backend API** (Port 4000)
+   ```bash
+   cd app-be
+   bun run dev
+   ```
+
+2. **Start the Web Portal** (Port 3000)
+   ```bash
+   cd app-web
+   bun run dev
+   ```
+
+3. **Start the Admin Portal** (Port 3100)
+   ```bash
+   cd app-admin
+   bun run dev
+   ```
+
+4. **Start the Mobile App**
+   ```bash
+   cd app-mobile
+   bun run start
+   # Press 'i' for iOS or 'a' for Android
+   ```
+
+## 📦 Shared Types Package
+
+All TypeScript types and interfaces are centralized in the `@app/shared-types` package to ensure consistency across all applications.
+
+### Structure
+```
+packages/shared-types/
+├── src/
+│   ├── index.ts              # Main export file
+│   ├── enums/               # Shared enumerations
+│   ├── types/               # Common types
+│   │   ├── auth.ts          # Authentication types
+│   │   └── common.ts        # Common/utility types
+│   └── models/              # Data model interfaces
+│       └── user.ts          # User model interfaces
+```
+
+### Usage
+
+The shared-types package is linked locally using the `file:` protocol in each app's `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@app/shared-types": "file:../packages/shared-types"
+  }
+}
+```
+
+Import types in your code:
+```typescript
+import { UserRole, IUser, ApiResponse } from '@app/shared-types';
+```
+
+## 👥 User Roles
+
+The template supports three user roles with different access levels:
+
+- **SUPER_ADMIN**: Platform administrators with full system access
+- **MANAGER**: Middle-level users with management capabilities
+- **USER**: Standard users with basic access
+
+## 🔑 Features
+
+- **Authentication**: Email/password login with JWT tokens
+- **User Management**: User registration, profile management
+- **Role-based Access**: Different permissions for different user types
+- **Email Verification**: Email verification workflow
+- **Password Reset**: Forgot password functionality
+- **Multi-platform**: Web, admin portal, and mobile apps
+
+## 🛠️ Development
+
+### Database Commands
 
 ```bash
-cd app-be
-bun install
-cp .env.example .env
-# Configure your database connection in .env
+# Run migrations
 bun run prisma:migrate
+
+# Open Prisma Studio
+bun run prisma:studio
+
+# Seed the database
 bun run prisma:seed
-bun run dev
+
+# Generate Prisma client
+bun run prisma:generate
 ```
 
-The backend API will be available at `http://localhost:4000`
-
-### Web App Setup (app-web)
+### Build Commands
 
 ```bash
-cd app-web
-bun install
-bun run dev
+# Build backend
+cd app-be && bun run build
+
+# Build web apps
+cd app-web && bun run build
+cd app-admin && bun run build
+
+# Build mobile app
+cd app-mobile && eas build
 ```
-
-The web application will be available at `http://localhost:3000`
-
-### Mobile App Setup (app-mobile)
-
-```bash
-cd app-mobile
-bun install
-bun start
-```
-
-Use the Expo Go app to scan the QR code or run on simulators.
-
-### Admin Dashboard Setup (app-admin)
-
-```bash
-cd app-admin
-bun install
-bun run dev
-```
-
-The admin dashboard will be available at `http://localhost:3100`
-
-## Features
-
-### Authentication System
-- JWT-based authentication
-- User registration and login
-- Password reset functionality
-- Protected routes
-
-### Database
-- Prisma ORM with PostgreSQL
-- User management
-- Database migrations and seeding
-
-### API Documentation
-- Swagger/OpenAPI documentation
-- Input validation with express-validator
-- Error handling middleware
-
-### Security
-- Helmet for security headers
-- CORS configuration
-- Rate limiting
-- Password hashing with bcrypt
-
-## Tech Stack
-
-### Backend (app-be)
-- Express.js
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT authentication
-- Swagger documentation
-
-### Web (app-web)
-- Next.js 15
-- React 19
-- TypeScript
-- Tailwind CSS
-
-### Mobile (app-mobile)
-- React Native
-- Expo Router
-- TypeScript
-- React Navigation
-
-### Admin (app-admin)
-- Next.js 15
-- React 19
-- TypeScript
-- Tailwind CSS
-
-## Development
-
-### Available Scripts
-
-Each application has its own set of scripts:
-
-- `dev`: Start development server
-- `build`: Build for production
-- `start`: Start production server
-- `lint`: Run ESLint
 
 ### Testing
 
-Backend includes Jest testing setup:
-
 ```bash
-cd app-be
-bun run test
+# Run backend tests
+cd app-be && bun run test
+
+# Run web app tests
+cd app-web && bun run test
 ```
 
-## Deployment
+## 🔒 Security Features
 
-Each application can be deployed independently:
+- JWT-based authentication with refresh tokens
+- Role-based access control (RBAC)
+- Secure HTTP-only cookies for web sessions
+- Email verification and password reset functionality
 
-- **Backend**: Deploy to any Node.js hosting service (Heroku, Railway, etc.)
-- **Web/Admin**: Deploy to Vercel, Netlify, or any static hosting
-- **Mobile**: Build and distribute through app stores using EAS Build
+## 🌍 Environment Variables
 
-## Contributing
+### Backend (.env)
+```env
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-secret-key"
+JWT_REFRESH_SECRET="your-refresh-secret"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_IN="7d"
+PORT=4000
+NODE_ENV="development"
+```
+
+### Web Apps (.env.local)
+```env
+NEXT_PUBLIC_API_URL="http://localhost:4000/api/v1"
+```
+
+### Mobile App
+Configure in `app.json` or use environment-specific config files.
+
+## 📄 API Documentation
+
+The backend API is documented with Swagger/OpenAPI. Access the documentation at:
+```
+http://localhost:4000/api-docs
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📝 License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+Built with ❤️ as a modern app template

@@ -1,37 +1,40 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
     const mailOptions = {
-      from: `"${process.env.APP_NAME || 'App Template'}" <${process.env.EMAIL_USER}>`,
+      from: `"${process.env.APP_NAME || "App Template"}" <${process.env.EMAIL_USER}>`,
       to,
       subject,
-      html
+      html,
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: %s', info.messageId);
+    console.log("Email sent: %s", info.messageId);
     return info;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     throw error;
   }
 };
 
-export const sendVerificationEmail = async (email: string, verificationToken: string) => {
-  const verificationUrl = `${process.env.APP_URL || 'http://localhost:4000'}/api/v1/auth/verify-email?token=${verificationToken}`;
-  
+export const sendVerificationEmail = async (
+  email: string,
+  verificationToken: string
+) => {
+  const verificationUrl = `${process.env.APP_URL || "http://localhost:4000"}/api/v1/auth/verify-email?token=${verificationToken}`;
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333;">Welcome!</h2>
@@ -45,12 +48,15 @@ export const sendVerificationEmail = async (email: string, verificationToken: st
     </div>
   `;
 
-  return sendEmail(email, 'Verify your email address', html);
+  return sendEmail(email, "Verify your email address", html);
 };
 
-export const sendPasswordResetEmail = async (email: string, resetToken: string) => {
-  const resetUrl = `${process.env.APP_URL || 'http://localhost:4000'}/reset-password?token=${resetToken}`;
-  
+export const sendPasswordResetEmail = async (
+  email: string,
+  resetToken: string
+) => {
+  const resetUrl = `${process.env.APP_URL || "http://localhost:4000"}/reset-password?token=${resetToken}`;
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333;">Password Reset Request</h2>
@@ -64,7 +70,7 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
     </div>
   `;
 
-  return sendEmail(email, 'Password Reset Request', html);
+  return sendEmail(email, "Password Reset Request", html);
 };
 
 export const sendTestEmail = async (to: string) => {
@@ -78,5 +84,5 @@ export const sendTestEmail = async (to: string) => {
     </div>
   `;
 
-  return sendEmail(to, 'Email Configuration Test', html);
+  return sendEmail(to, "Email Configuration Test", html);
 };

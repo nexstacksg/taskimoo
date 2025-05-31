@@ -1,131 +1,132 @@
-import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerJSDoc from "swagger-jsdoc";
 
 const swaggerDefinition = {
-  openapi: '3.0.0',
+  openapi: "3.0.0",
   info: {
-    title: 'API Template',
-    version: '1.0.0',
-    description: 'A modern backend API template with authentication and user management',
+    title: "API Template",
+    version: "1.0.0",
+    description:
+      "A modern backend API template with authentication and user management",
     contact: {
-      name: 'API Support',
-      email: 'support@example.com'
-    }
+      name: "API Support",
+      email: "support@example.com",
+    },
   },
   servers: [
     {
       url: `http://localhost:${process.env.PORT || 4000}/api/v1`,
-      description: 'Development server'
+      description: "Development server",
     },
     {
-      url: 'https://api.example.com/api/v1',
-      description: 'Production server'
-    }
+      url: "https://api.example.com/api/v1",
+      description: "Production server",
+    },
   ],
   components: {
     securitySchemes: {
       bearerAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Enter JWT token'
-      }
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "Enter JWT token",
+      },
     },
     responses: {
       Unauthorized: {
-        description: 'Unauthorized',
+        description: "Unauthorized",
         content: {
-          'application/json': {
+          "application/json": {
             schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
+              $ref: "#/components/schemas/Error",
+            },
+          },
+        },
       },
       Forbidden: {
-        description: 'Forbidden',
+        description: "Forbidden",
         content: {
-          'application/json': {
+          "application/json": {
             schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
+              $ref: "#/components/schemas/Error",
+            },
+          },
+        },
       },
       NotFound: {
-        description: 'Not found',
+        description: "Not found",
         content: {
-          'application/json': {
+          "application/json": {
             schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      }
+              $ref: "#/components/schemas/Error",
+            },
+          },
+        },
+      },
     },
     schemas: {
       Error: {
-        type: 'object',
+        type: "object",
         properties: {
           success: {
-            type: 'boolean',
-            example: false
+            type: "boolean",
+            example: false,
           },
           message: {
-            type: 'string',
-            example: 'Error message'
+            type: "string",
+            example: "Error message",
           },
           error: {
-            type: 'object',
+            type: "object",
             properties: {
               code: {
-                type: 'string',
-                example: 'ERROR_CODE'
+                type: "string",
+                example: "ERROR_CODE",
               },
               details: {
-                type: 'object'
-              }
-            }
-          }
-        }
+                type: "object",
+              },
+            },
+          },
+        },
       },
       Success: {
-        type: 'object',
+        type: "object",
         properties: {
           success: {
-            type: 'boolean',
-            example: true
+            type: "boolean",
+            example: true,
           },
           message: {
-            type: 'string',
-            example: 'Success message'
+            type: "string",
+            example: "Success message",
           },
           data: {
-            type: 'object'
-          }
-        }
-      }
-    }
+            type: "object",
+          },
+        },
+      },
+    },
   },
   security: [
     {
-      bearerAuth: []
-    }
+      bearerAuth: [],
+    },
   ],
   tags: [
     {
-      name: 'Authentication',
-      description: 'Authentication endpoints'
+      name: "Authentication",
+      description: "Authentication endpoints",
     },
     {
-      name: 'Users',
-      description: 'User management endpoints'
-    }
-  ]
+      name: "Users",
+      description: "User management endpoints",
+    },
+  ],
 };
 
 const options = {
   definition: swaggerDefinition,
-  apis: ['./src/routes/api/v1/*.ts', './src/controllers/**/*.ts'], // Path to the API routes
+  apis: ["./src/routes/api/v1/*.ts", "./src/controllers/**/*.ts"], // Path to the API routes
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

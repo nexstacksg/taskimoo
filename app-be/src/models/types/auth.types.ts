@@ -1,5 +1,5 @@
-import { IUserPublic } from '../interfaces/IUser';
-import { UserRole } from '../enums';
+import { IUserPublic } from "../interfaces/IUser";
+import { UserRole } from "../enums";
 
 export interface RegisterRequest {
   email: string;

@@ -1,13 +1,8 @@
-import { Response, NextFunction } from 'express';
-import { AuthRequest } from '../../middleware/auth/authenticate';
-import { ApiError } from '../../middleware/error/errorHandler';
-import { 
-  ApiResponse, 
-  HttpStatus, 
-  ErrorCode,
-  UserRole
-} from '../../models';
-import userService from '../../services/user/userService';
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "../../middleware/auth/authenticate";
+import { ApiError } from "../../middleware/error/errorHandler";
+import { ApiResponse, HttpStatus, ErrorCode, UserRole } from "../../models";
+import userService from "../../services/user/userService";
 
 export const createUser = async (
   req: AuthRequest,
@@ -16,19 +11,27 @@ export const createUser = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     // Only admins and managers can create users
     if (req.user.role === UserRole.USER) {
-      throw new ApiError('Permission denied', HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN);
+      throw new ApiError(
+        "Permission denied",
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORBIDDEN
+      );
     }
 
     const user = await userService.createUser(req.body);
 
     const response: ApiResponse = {
       success: true,
-      data: user
+      data: user,
     };
 
     res.status(HttpStatus.CREATED).json(response);
@@ -44,7 +47,11 @@ export const getUserList = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     const { page, limit, sortBy, sortOrder, role, status, search } = req.query;
@@ -54,19 +61,16 @@ export const getUserList = async (
     if (status) filters.status = status;
     if (search) filters.search = search;
 
-    const result = await userService.getUserList(
-      filters,
-      { 
-        page: page ? parseInt(page as string) : undefined,
-        limit: limit ? parseInt(limit as string) : undefined,
-        sortBy: sortBy as string,
-        sortOrder: sortOrder as 'asc' | 'desc'
-      }
-    );
+    const result = await userService.getUserList(filters, {
+      page: page ? parseInt(page as string) : undefined,
+      limit: limit ? parseInt(limit as string) : undefined,
+      sortBy: sortBy as string,
+      sortOrder: sortOrder as "asc" | "desc",
+    });
 
     const response: ApiResponse = {
       success: true,
-      data: result
+      data: result,
     };
 
     res.json(response);
@@ -82,14 +86,18 @@ export const getUserById = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     const user = await userService.getUserById(req.params.id);
 
     const response: ApiResponse = {
       success: true,
-      data: user
+      data: user,
     };
 
     res.json(response);
@@ -105,22 +113,27 @@ export const updateUser = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     // Users can update their own profile, managers/admins can update others
     if (req.user.id !== req.params.id && req.user.role === UserRole.USER) {
-      throw new ApiError('Permission denied', HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN);
+      throw new ApiError(
+        "Permission denied",
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORBIDDEN
+      );
     }
 
-    const user = await userService.updateUser(
-      req.params.id,
-      req.body
-    );
+    const user = await userService.updateUser(req.params.id, req.body);
 
     const response: ApiResponse = {
       success: true,
-      data: user
+      data: user,
     };
 
     res.json(response);
@@ -136,19 +149,30 @@ export const deleteUser = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     // Only admins can delete users
-    if (req.user.role !== UserRole.SUPER_ADMIN && req.user.role !== UserRole.MANAGER) {
-      throw new ApiError('Permission denied', HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN);
+    if (
+      req.user.role !== UserRole.SUPER_ADMIN &&
+      req.user.role !== UserRole.MANAGER
+    ) {
+      throw new ApiError(
+        "Permission denied",
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORBIDDEN
+      );
     }
 
     await userService.deleteUser(req.params.id);
 
     const response: ApiResponse = {
       success: true,
-      message: 'User deleted successfully'
+      message: "User deleted successfully",
     };
 
     res.json(response);
@@ -164,12 +188,20 @@ export const updateUserStatus = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     // Only managers and admins can update user status
     if (req.user.role === UserRole.USER) {
-      throw new ApiError('Permission denied', HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN);
+      throw new ApiError(
+        "Permission denied",
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORBIDDEN
+      );
     }
 
     const user = await userService.updateUserStatus(
@@ -179,7 +211,7 @@ export const updateUserStatus = async (
 
     const response: ApiResponse = {
       success: true,
-      data: user
+      data: user,
     };
 
     res.json(response);
@@ -195,17 +227,18 @@ export const updateMyProfile = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
-    const user = await userService.updateUser(
-      req.user.id,
-      req.body
-    );
+    const user = await userService.updateUser(req.user.id, req.body);
 
     const response: ApiResponse = {
       success: true,
-      data: user
+      data: user,
     };
 
     res.json(response);
@@ -221,7 +254,11 @@ export const changePassword = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new ApiError('Authentication required', HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_REQUIRED);
+      throw new ApiError(
+        "Authentication required",
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED
+      );
     }
 
     const { oldPassword, newPassword } = req.body;
@@ -230,7 +267,7 @@ export const changePassword = async (
 
     const response: ApiResponse = {
       success: true,
-      message: 'Password changed successfully'
+      message: "Password changed successfully",
     };
 
     res.json(response);

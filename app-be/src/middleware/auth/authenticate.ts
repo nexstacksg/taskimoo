@@ -1,15 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken } from '../../config/jwt';
-import { extractBearerToken } from '../../utils/auth';
-import { ApiError } from '../error/errorHandler';
-import prisma from '../../database/client';
-import { UserRole, UserStatus } from '../../models/enums';
+import { Request, Response, NextFunction } from "express";
+import { verifyAccessToken } from "../../config/jwt";
+import { extractBearerToken } from "../../utils/auth";
+import { ApiError } from "../error/errorHandler";
+import prisma from "../../database/client";
+import { UserRole, UserStatus } from "../../models/enums";
 
 export interface AuthRequest<
   P = any,
   ResBody = any,
   ReqBody = any,
-  ReqQuery = any
+  ReqQuery = any,
 > extends Request<P, ResBody, ReqBody, ReqQuery> {
   user?: {
     id: string;
@@ -29,7 +29,7 @@ export const authenticate = async (
     const token = extractBearerToken(req.headers.authorization);
 
     if (!token) {
-      throw new ApiError('No token provided', 401, 'NO_TOKEN');
+      throw new ApiError("No token provided", 401, "NO_TOKEN");
     }
 
     // Verify token
@@ -42,16 +42,16 @@ export const authenticate = async (
         id: true,
         email: true,
         role: true,
-        status: true
-      }
+        status: true,
+      },
     });
 
     if (!user) {
-      throw new ApiError('User not found', 401, 'USER_NOT_FOUND');
+      throw new ApiError("User not found", 401, "USER_NOT_FOUND");
     }
 
     if (user.status !== UserStatus.ACTIVE) {
-      throw new ApiError('Account is not active', 403, 'ACCOUNT_INACTIVE');
+      throw new ApiError("Account is not active", 403, "ACCOUNT_INACTIVE");
     }
 
     // Attach user to request
@@ -59,7 +59,7 @@ export const authenticate = async (
       id: user.id,
       email: user.email,
       role: user.role as UserRole,
-      status: user.status as UserStatus
+      status: user.status as UserStatus,
     };
 
     next();
@@ -67,7 +67,7 @@ export const authenticate = async (
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError('Invalid token', 401, 'INVALID_TOKEN'));
+      next(new ApiError("Invalid token", 401, "INVALID_TOKEN"));
     }
   }
 };
@@ -89,8 +89,8 @@ export const optionalAuth = async (
           id: true,
           email: true,
           role: true,
-          status: true
-        }
+          status: true,
+        },
       });
 
       if (user && user.status === UserStatus.ACTIVE) {
@@ -98,11 +98,12 @@ export const optionalAuth = async (
           id: user.id,
           email: user.email,
           role: user.role as UserRole,
-          status: user.status as UserStatus
+          status: user.status as UserStatus,
         };
       }
     }
-  } catch (error) {
+  } catch {
+    console.error("Ignore errors for optional auth");
     // Ignore errors for optional auth
   }
 

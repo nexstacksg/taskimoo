@@ -1,2 +1,2 @@
 // Export all interfaces
-export * from './IUser';
+export * from "./IUser";

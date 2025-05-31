@@ -1,12 +1,7 @@
-import prisma from '../../database/client';
-import { ApiError } from '../../middleware/error/errorHandler';
-import { hashPassword, verifyPassword } from '../../utils/auth';
-import { 
-  HttpStatus,
-  ErrorCode,
-  UserRole,
-  UserStatus
-} from '../../models';
+import prisma from "../../database/client";
+import { ApiError } from "../../middleware/error/errorHandler";
+import { hashPassword, verifyPassword } from "../../utils/auth";
+import { HttpStatus, ErrorCode, UserRole, UserStatus } from "../../models";
 
 export class UserService {
   async createUser(data: {
@@ -18,12 +13,12 @@ export class UserService {
   }): Promise<any> {
     // Check if email already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
     });
 
     if (existingUser) {
       throw new ApiError(
-        'User with this email already exists',
+        "User with this email already exists",
         HttpStatus.BAD_REQUEST,
         ErrorCode.USER_EXISTS
       );
@@ -40,7 +35,7 @@ export class UserService {
         firstName: data.firstName,
         lastName: data.lastName,
         role: data.role || UserRole.USER,
-        status: UserStatus.PENDING_VERIFICATION
+        status: UserStatus.PENDING_VERIFICATION,
       },
       select: {
         id: true,
@@ -49,8 +44,8 @@ export class UserService {
         lastName: true,
         role: true,
         status: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     return user;
@@ -66,7 +61,7 @@ export class UserService {
       page?: number;
       limit?: number;
       sortBy?: string;
-      sortOrder?: 'asc' | 'desc';
+      sortOrder?: "asc" | "desc";
     }
   ): Promise<{
     data: any[];
@@ -77,7 +72,12 @@ export class UserService {
       pages: number;
     };
   }> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = pagination;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = pagination;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -85,9 +85,9 @@ export class UserService {
     if (filters.status) where.status = filters.status;
     if (filters.search) {
       where.OR = [
-        { firstName: { contains: filters.search, mode: 'insensitive' } },
-        { lastName: { contains: filters.search, mode: 'insensitive' } },
-        { email: { contains: filters.search, mode: 'insensitive' } }
+        { firstName: { contains: filters.search, mode: "insensitive" } },
+        { lastName: { contains: filters.search, mode: "insensitive" } },
+        { email: { contains: filters.search, mode: "insensitive" } },
       ];
     }
 
@@ -105,10 +105,10 @@ export class UserService {
           role: true,
           status: true,
           lastLoginAt: true,
-          createdAt: true
-        }
+          createdAt: true,
+        },
       }),
-      prisma.user.count({ where })
+      prisma.user.count({ where }),
     ]);
 
     return {
@@ -117,8 +117,8 @@ export class UserService {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -135,12 +135,16 @@ export class UserService {
         lastLoginAt: true,
         emailVerifiedAt: true,
         createdAt: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     if (!user) {
-      throw new ApiError('User not found', HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+      throw new ApiError(
+        "User not found",
+        HttpStatus.NOT_FOUND,
+        ErrorCode.USER_NOT_FOUND
+      );
     }
 
     return user;
@@ -148,19 +152,22 @@ export class UserService {
 
   async getUserByEmail(email: string): Promise<any> {
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     return user;
   }
 
-  async updateUser(id: string, data: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    role?: UserRole;
-    status?: UserStatus;
-  }): Promise<any> {
+  async updateUser(
+    id: string,
+    data: {
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+      role?: UserRole;
+      status?: UserStatus;
+    }
+  ): Promise<any> {
     // Check user exists
     await this.getUserById(id);
 
@@ -169,13 +176,13 @@ export class UserService {
       const existingUser = await prisma.user.findFirst({
         where: {
           email: data.email,
-          id: { not: id }
-        }
+          id: { not: id },
+        },
       });
 
       if (existingUser) {
         throw new ApiError(
-          'User with this email already exists',
+          "User with this email already exists",
           HttpStatus.BAD_REQUEST,
           ErrorCode.USER_EXISTS
         );
@@ -192,8 +199,8 @@ export class UserService {
         lastName: true,
         role: true,
         status: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     return user;
@@ -208,7 +215,7 @@ export class UserService {
       // Delete user's personal data
       prisma.auditLog.deleteMany({ where: { userId: id } }),
       // Finally delete the user
-      prisma.user.delete({ where: { id } })
+      prisma.user.delete({ where: { id } }),
     ]);
   }
 
@@ -222,28 +229,40 @@ export class UserService {
         firstName: true,
         lastName: true,
         status: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     return user;
   }
 
-  async changePassword(id: string, oldPassword: string, newPassword: string): Promise<void> {
+  async changePassword(
+    id: string,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<void> {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: { password: true }
+      select: { password: true },
     });
 
     if (!user) {
-      throw new ApiError('User not found', HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+      throw new ApiError(
+        "User not found",
+        HttpStatus.NOT_FOUND,
+        ErrorCode.USER_NOT_FOUND
+      );
     }
 
     // Verify old password
     const isValidPassword = await verifyPassword(oldPassword, user.password);
 
     if (!isValidPassword) {
-      throw new ApiError('Invalid current password', HttpStatus.BAD_REQUEST, ErrorCode.INVALID_CREDENTIALS);
+      throw new ApiError(
+        "Invalid current password",
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.INVALID_CREDENTIALS
+      );
     }
 
     // Hash new password
@@ -252,41 +271,38 @@ export class UserService {
     // Update password
     await prisma.user.update({
       where: { id },
-      data: { password: hashedPassword }
+      data: { password: hashedPassword },
     });
   }
 
   async updateLastLogin(id: string): Promise<void> {
     await prisma.user.update({
       where: { id },
-      data: { lastLoginAt: new Date() }
+      data: { lastLoginAt: new Date() },
     });
   }
 
   async getUserPermissions(id: string): Promise<string[]> {
     const user = await this.getUserById(id);
-    
+
     // Define permissions based on role
     const permissions: Record<UserRole, string[]> = {
       [UserRole.SUPER_ADMIN]: [
-        'user:manage',
-        'user:create',
-        'user:delete',
-        'user:update',
-        'role:manage',
-        'audit:view',
-        'settings:manage'
+        "user:manage",
+        "user:create",
+        "user:delete",
+        "user:update",
+        "role:manage",
+        "audit:view",
+        "settings:manage",
       ],
       [UserRole.MANAGER]: [
-        'user:view',
-        'user:create',
-        'user:update',
-        'audit:view'
+        "user:view",
+        "user:create",
+        "user:update",
+        "audit:view",
       ],
-      [UserRole.USER]: [
-        'profile:view',
-        'profile:update'
-      ]
+      [UserRole.USER]: ["profile:view", "profile:update"],
     };
 
     return permissions[user.role as UserRole] || [];
