@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ErrorCode, HttpStatus, ApiErrorResponse } from "../../models";
+import { ErrorCode, HttpStatus, ApiErrorResponse } from "@app/shared-types";
 
 export class ApiError extends Error {
   statusCode: number;

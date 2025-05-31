@@ -12,7 +12,7 @@ import {
   ErrorCode,
   HttpStatus,
   ApiResponse,
-} from "../../models";
+} from "@app/shared-types";
 
 export const register = async (
   req: Request<{}, {}, RegisterRequest>,

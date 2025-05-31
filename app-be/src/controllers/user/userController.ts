@@ -1,7 +1,12 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middleware/auth/authenticate";
 import { ApiError } from "../../middleware/error/errorHandler";
-import { ApiResponse, HttpStatus, ErrorCode, UserRole } from "../../models";
+import {
+  ApiResponse,
+  HttpStatus,
+  ErrorCode,
+  UserRole,
+} from "@app/shared-types";
 import userService from "../../services/user/userService";
 
 export const createUser = async (

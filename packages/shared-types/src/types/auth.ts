@@ -52,3 +52,16 @@ export interface AuthTokens {
   refreshToken: string;
   expiresIn: number;
 }
+
+export interface EmailVerificationRequest {
+  token: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetConfirmRequest {
+  token: string;
+  newPassword: string;
+}

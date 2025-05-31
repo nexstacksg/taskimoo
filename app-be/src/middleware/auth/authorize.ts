@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "./authenticate";
 import { ApiError } from "../error/errorHandler";
-import { UserRole } from "../../models/enums";
+import { UserRole } from "@app/shared-types";
 
 export const authorize = (...allowedRoles: string[]) => {
   return async (req: AuthRequest, _res: Response, next: NextFunction) => {

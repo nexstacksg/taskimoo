@@ -1,7 +1,7 @@
 import prisma from "../../database/client";
 import { ApiError } from "../../middleware/error/errorHandler";
 import { hashPassword, verifyPassword } from "../../utils/auth";
-import { HttpStatus, ErrorCode, UserRole, UserStatus } from "../../models";
+import { HttpStatus, ErrorCode, UserRole, UserStatus } from "@app/shared-types";
 
 export class UserService {
   async createUser(data: {

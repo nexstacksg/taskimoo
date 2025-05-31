@@ -21,7 +21,7 @@ import {
   ErrorCode,
   HttpStatus,
   TokenPayload,
-} from "../../models";
+} from "@app/shared-types";
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
@@ -35,8 +35,10 @@ export class AuthService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      profilePhoto: user.profilePhoto || null,
       role: user.role as UserRole,
       status: user.status,
+      emailVerified: !!user.emailVerifiedAt,
       createdAt: user.createdAt,
     };
   }
@@ -66,9 +68,9 @@ export class AuthService {
       data: {
         email: data.email,
         password: passwordHash,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        role: data.role || UserRole.USER,
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        role: UserRole.USER,
         status: UserStatus.PENDING_VERIFICATION,
         emailVerificationToken,
       },
@@ -84,7 +86,7 @@ export class AuthService {
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken({
       ...tokenPayload,
-      tokenId: generateTokenId(),
+      sessionId: generateTokenId(),
     });
 
     // Store refresh token
@@ -105,6 +107,7 @@ export class AuthService {
       user: this.createUserPublic(user),
       accessToken,
       refreshToken,
+      expiresIn: 15 * 60 * 1000, // 15 minutes in milliseconds
     };
   }
 
@@ -154,7 +157,7 @@ export class AuthService {
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken({
       ...tokenPayload,
-      tokenId: generateTokenId(),
+      sessionId: generateTokenId(),
     });
 
     // Update last login and refresh token
@@ -180,6 +183,7 @@ export class AuthService {
       user: this.createUserPublic(user),
       accessToken,
       refreshToken,
+      expiresIn: 15 * 60 * 1000, // 15 minutes in milliseconds
     };
   }
 
@@ -219,7 +223,7 @@ export class AuthService {
       const newAccessToken = generateAccessToken(tokenPayload);
       const newRefreshToken = generateRefreshToken({
         ...tokenPayload,
-        tokenId: generateTokenId(),
+        sessionId: generateTokenId(),
       });
 
       // Update refresh token
@@ -231,8 +235,9 @@ export class AuthService {
       return {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
+        expiresIn: 15 * 60 * 1000, // 15 minutes in milliseconds
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(
         "Invalid refresh token",
         HttpStatus.UNAUTHORIZED,

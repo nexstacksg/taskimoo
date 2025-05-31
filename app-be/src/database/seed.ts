@@ -1,6 +1,6 @@
 import prisma from "./client";
 import { hashPassword } from "../utils/auth";
-import { UserRole, UserStatus } from "../models/enums";
+import { UserRole, UserStatus } from "@app/shared-types";
 
 async function main() {
   console.log("🌱 Starting seed...");

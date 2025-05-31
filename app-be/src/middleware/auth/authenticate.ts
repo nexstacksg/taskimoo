@@ -3,7 +3,7 @@ import { verifyAccessToken } from "../../config/jwt";
 import { extractBearerToken } from "../../utils/auth";
 import { ApiError } from "../error/errorHandler";
 import prisma from "../../database/client";
-import { UserRole, UserStatus } from "../../models/enums";
+import { UserRole, UserStatus } from "@app/shared-types";
 
 export interface AuthRequest<
   P = any,

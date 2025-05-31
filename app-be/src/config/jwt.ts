@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { TokenPayload, RefreshTokenPayload } from "../models";
+import { TokenPayload, RefreshTokenPayload } from "@app/shared-types";
 
 export const generateAccessToken = (payload: TokenPayload): string => {
   const options: SignOptions = {
