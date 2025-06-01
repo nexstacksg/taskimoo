@@ -1,21 +1,22 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import type { NextRequest } from "next/server";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const refreshToken = cookieStore.get('refreshToken');
+    const refreshToken = cookieStore.get("refreshToken");
 
     // Call backend logout if refresh token exists
     if (refreshToken) {
       try {
         await fetch(`${API_BASE_URL}/auth/logout`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ refreshToken: refreshToken.value }),
         });
@@ -25,14 +26,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Clear cookies
-    cookieStore.delete('accessToken');
-    cookieStore.delete('refreshToken');
-    cookieStore.delete('adminRole');
+    cookieStore.delete("accessToken");
+    cookieStore.delete("refreshToken");
+    cookieStore.delete("adminRole");
 
-    return NextResponse.redirect(new URL('/login', request.nextUrl.origin));
+    return NextResponse.redirect(new URL("/login", request.nextUrl.origin));
   } catch {
     return NextResponse.json(
-      { error: { message: 'Logout failed' } },
+      { error: { message: "Logout failed" } },
       { status: 500 }
     );
   }

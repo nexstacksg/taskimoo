@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -27,14 +27,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Invalid credentials');
+        throw new Error(data.error?.message || "Invalid credentials");
       }
 
       // Redirect to home on success
-      router.push('/');
+      router.push("/");
     } catch (err) {
       const error = err as { message?: string };
-      setError(error.message || 'Login failed');
+      setError(error.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export default function LoginPage() {
               <p className="text-sm text-black">{error}</p>
             </div>
           )}
-          
+
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
@@ -99,13 +99,19 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-black text-sm font-medium text-black bg-white hover:bg-black hover:text-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </div>
 
-          <div className="text-center">
+          <div className="text-center space-y-1">
             <p className="text-xs text-black">
-              Test: super.admin@example.com / Password123
+              <strong>Test Admin Accounts:</strong>
+            </p>
+            <p className="text-xs text-black">
+              Super Admin: super.admin@example.com / Password123
+            </p>
+            <p className="text-xs text-black">
+              Manager: manager@example.com / Password123
             </p>
           </div>
         </form>
