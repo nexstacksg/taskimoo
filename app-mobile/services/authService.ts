@@ -1,38 +1,26 @@
 import api from "./api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { 
+  LoginRequest, 
+  RegisterRequest, 
+  IUserPublic,
+  AuthResponse as SharedAuthResponse 
+} from "@app/shared-types";
 
-export interface LoginData {
-  email: string;
-  password: string;
+// Extend LoginRequest to include mobile-specific fields
+export interface LoginData extends LoginRequest {
   deviceToken?: string;
   platform?: "ios" | "android";
 }
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-}
+// Re-export RegisterRequest as RegisterData for backward compatibility
+export type RegisterData = RegisterRequest;
 
-export interface User {
-  id: string;
-  email: string;
-  phone?: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  status: string;
-  profilePhoto?: string;
-  employeeId?: string;
-  department?: string;
-  createdAt: string;
-}
+// Re-export IUserPublic as User for backward compatibility
+export type User = IUserPublic;
 
-export interface AuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
+// Extend the shared AuthResponse to include company info
+export interface AuthResponse extends SharedAuthResponse {
   company?: {
     id: string;
     name: string;

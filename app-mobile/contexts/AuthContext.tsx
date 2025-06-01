@@ -7,21 +7,21 @@ import {
   type ReactNode,
 } from "react";
 import authService, {
-  type User,
   type LoginData,
   type RegisterData,
 } from "../services/authService";
+import { IUserPublic } from "@app/shared-types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthContextType {
-  user: User | null;
+  user: IUserPublic | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  setUser: (user: User) => void;
+  setUser: (user: IUserPublic) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -46,7 +46,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUserPublic | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

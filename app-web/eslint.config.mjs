@@ -15,8 +15,9 @@ const eslintConfig = [
     rules: {
       // Enforce double quotes
       "quotes": ["error", "double", { "avoidEscape": true }],
-      // Or use single quotes:
-      // "quotes": ["error", "single", { "avoidEscape": true }],
+      // Warn on unused variables
+      "@typescript-eslint/no-unused-vars": "warn",
+      "no-unused-vars": "warn",
     }
   }
 ];
