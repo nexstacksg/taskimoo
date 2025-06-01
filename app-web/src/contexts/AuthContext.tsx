@@ -2,19 +2,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import authService, { User } from "@/services/authService";
+import authService from "@/services/authService";
+import { IUserPublic, RegisterRequest } from "@app/shared-types";
 
 interface AuthContextType {
-  user: User | null;
+  user: IUserPublic | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (data: {
-    email: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-  }) => Promise<void>;
+  register: (data: RegisterRequest) => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
 
@@ -32,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUserPublic | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -84,19 +80,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const register = async (data: {
-    email: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-  }) => {
+  const register = async (data: RegisterRequest) => {
     try {
-      const authData = await authService.register({
-        email: data.email,
-        password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
-      });
+      const authData = await authService.register(data);
       setUser(authData.user);
       router.push("/");
     } catch (error) {

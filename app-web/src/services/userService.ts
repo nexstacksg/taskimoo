@@ -1,5 +1,5 @@
 import { internalApi } from "./api";
-import { User } from "./authService";
+import { IUserPublic, ApiResponse, PaginationParams, PaginatedResponse } from "@app/shared-types";
 
 interface UpdateProfileData {
   firstName?: string;
@@ -11,33 +11,34 @@ interface UpdateProfileData {
   department?: string;
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  error?: {
-    message: string;
-    code?: string;
-  };
-}
-
 class UserService {
   /**
    * Get current user profile
    */
-  async getMyProfile(): Promise<User> {
+  async getMyProfile(): Promise<IUserPublic> {
     const response =
-      await internalApi.get<ApiResponse<User>>("/users/my-profile");
+      await internalApi.get<ApiResponse<IUserPublic>>("/users/my-profile");
+    
+    if (!response.data) {
+      throw new Error("Invalid profile response");
+    }
+    
     return response.data;
   }
 
   /**
    * Update current user profile
    */
-  async updateMyProfile(data: UpdateProfileData): Promise<User> {
-    const response = await internalApi.put<ApiResponse<User>>(
+  async updateMyProfile(data: UpdateProfileData): Promise<IUserPublic> {
+    const response = await internalApi.put<ApiResponse<IUserPublic>>(
       "/users/my-profile",
       data
     );
+    
+    if (!response.data) {
+      throw new Error("Invalid update response");
+    }
+    
     return response.data;
   }
 
@@ -80,28 +81,26 @@ class UserService {
   /**
    * Get user by ID (admin only)
    */
-  async getUserById(userId: string): Promise<User> {
-    const response = await internalApi.get<ApiResponse<User>>(
+  async getUserById(userId: string): Promise<IUserPublic> {
+    const response = await internalApi.get<ApiResponse<IUserPublic>>(
       `/users/${userId}`
     );
+    
+    if (!response.data) {
+      throw new Error("Invalid user response");
+    }
+    
     return response.data;
   }
 
   /**
    * List users (admin only)
    */
-  async listUsers(params?: {
-    page?: number;
-    limit?: number;
+  async listUsers(params?: PaginationParams & {
     search?: string;
     role?: string;
     status?: string;
-  }): Promise<{
-    users: User[];
-    total: number;
-    page: number;
-    totalPages: number;
-  }> {
+  }): Promise<PaginatedResponse<IUserPublic>> {
     const queryParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -111,14 +110,13 @@ class UserService {
       });
     }
 
-    const response = await internalApi.get<
-      ApiResponse<{
-        users: User[];
-        total: number;
-        page: number;
-        totalPages: number;
-      }>
-    >(`/users?${queryParams.toString()}`);
+    const response = await internalApi.get<ApiResponse<PaginatedResponse<IUserPublic>>>(
+      `/users?${queryParams.toString()}`
+    );
+
+    if (!response.data) {
+      throw new Error("Invalid users list response");
+    }
 
     return response.data;
   }

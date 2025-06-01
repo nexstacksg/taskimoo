@@ -1,33 +1,13 @@
 import { internalApi, externalApi } from "./api";
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  email: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  phone?: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  status: string;
-  profilePhoto?: string;
-  employeeId?: string;
-  department?: string;
-  createdAt: string;
-}
+import {
+  LoginRequest,
+  RegisterRequest,
+  IUserPublic,
+  ApiResponse,
+} from "@app/shared-types";
 
 export interface AuthResponse {
-  user: User;
+  user: IUserPublic;
   company?: {
     id: string;
     name: string;
@@ -35,35 +15,36 @@ export interface AuthResponse {
   };
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  error?: {
-    message: string;
-    code?: string;
-  };
-}
-
 class AuthService {
   /**
    * Login user - uses internal API route that handles cookies
    */
-  async login(data: LoginData): Promise<AuthResponse> {
+  async login(data: LoginRequest): Promise<AuthResponse> {
     const response = await internalApi.post<ApiResponse<AuthResponse>>(
       "/auth/login",
       data
     );
+    
+    if (!response.data) {
+      throw new Error("Invalid login response");
+    }
+    
     return response.data;
   }
 
   /**
    * Register new user - uses internal API route that handles cookies
    */
-  async register(data: RegisterData): Promise<AuthResponse> {
+  async register(data: RegisterRequest): Promise<AuthResponse> {
     const response = await internalApi.post<ApiResponse<AuthResponse>>(
       "/auth/register",
       data
     );
+    
+    if (!response.data) {
+      throw new Error("Invalid registration response");
+    }
+    
     return response.data;
   }
 
@@ -77,20 +58,27 @@ class AuthService {
   /**
    * Get current user profile - uses internal API route that reads cookies
    */
-  async getProfile(): Promise<User> {
-    const response =
-      await internalApi.get<ApiResponse<{ user: User }>>("/auth/profile");
+  async getProfile(): Promise<IUserPublic> {
+    const response = await internalApi.get<ApiResponse<{ user: IUserPublic }>>(
+      "/auth/profile"
+    );
+
+    if (!response.data) {
+      throw new Error("Invalid profile response");
+    }
+
+    const profileData = response.data;
 
     // Handle different possible response structures
-    if (response.data?.user) {
-      return response.data.user;
+    if (profileData.user) {
+      return profileData.user;
     } else if (
-      response.data &&
-      typeof response.data === "object" &&
-      "id" in response.data
+      profileData &&
+      typeof profileData === "object" &&
+      "id" in profileData
     ) {
       // If the user data is directly in the data field
-      return response.data as unknown as User;
+      return profileData as unknown as IUserPublic;
     } else {
       throw new Error("Invalid user data structure");
     }
