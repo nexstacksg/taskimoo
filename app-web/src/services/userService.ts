@@ -1,5 +1,5 @@
-import { internalApi } from './api';
-import { User } from './authService';
+import { internalApi } from "./api";
+import { User } from "./authService";
 
 interface UpdateProfileData {
   firstName?: string;
@@ -25,7 +25,8 @@ class UserService {
    * Get current user profile
    */
   async getMyProfile(): Promise<User> {
-    const response = await internalApi.get<ApiResponse<User>>('/users/my-profile');
+    const response =
+      await internalApi.get<ApiResponse<User>>("/users/my-profile");
     return response.data;
   }
 
@@ -33,7 +34,10 @@ class UserService {
    * Update current user profile
    */
   async updateMyProfile(data: UpdateProfileData): Promise<User> {
-    const response = await internalApi.put<ApiResponse<User>>('/users/my-profile', data);
+    const response = await internalApi.put<ApiResponse<User>>(
+      "/users/my-profile",
+      data
+    );
     return response.data;
   }
 
@@ -42,18 +46,18 @@ class UserService {
    */
   async uploadProfilePhoto(file: File): Promise<{ url: string }> {
     const formData = new FormData();
-    formData.append('photo', file);
+    formData.append("photo", file);
 
     // For file uploads, we need to override the content-type
-    const response = await fetch('/api/users/my-profile/photo', {
-      method: 'POST',
+    const response = await fetch("/api/users/my-profile/photo", {
+      method: "POST",
       body: formData,
-      credentials: 'include',
+      credentials: "include",
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to upload photo');
+      throw new Error(error.error?.message || "Failed to upload photo");
     }
 
     const data = await response.json();
@@ -63,8 +67,11 @@ class UserService {
   /**
    * Change password
    */
-  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await internalApi.post('/users/change-password', {
+  async changePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    await internalApi.post("/users/change-password", {
       currentPassword,
       newPassword,
     });
@@ -74,7 +81,9 @@ class UserService {
    * Get user by ID (admin only)
    */
   async getUserById(userId: string): Promise<User> {
-    const response = await internalApi.get<ApiResponse<User>>(`/users/${userId}`);
+    const response = await internalApi.get<ApiResponse<User>>(
+      `/users/${userId}`
+    );
     return response.data;
   }
 
@@ -87,7 +96,12 @@ class UserService {
     search?: string;
     role?: string;
     status?: string;
-  }): Promise<{ users: User[]; total: number; page: number; totalPages: number }> {
+  }): Promise<{
+    users: User[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     const queryParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -97,13 +111,15 @@ class UserService {
       });
     }
 
-    const response = await internalApi.get<ApiResponse<{
-      users: User[];
-      total: number;
-      page: number;
-      totalPages: number;
-    }>>(`/users?${queryParams.toString()}`);
-    
+    const response = await internalApi.get<
+      ApiResponse<{
+        users: User[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>
+    >(`/users?${queryParams.toString()}`);
+
     return response.data;
   }
 }

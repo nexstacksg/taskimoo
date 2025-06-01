@@ -20,7 +20,9 @@ export default function ForgotPasswordPage() {
       setSubmitted(true);
     } catch (err) {
       const error = err as { message?: string };
-      setError(error.message || "Failed to send reset email. Please try again.");
+      setError(
+        error.message || "Failed to send reset email. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -57,8 +59,8 @@ export default function ForgotPasswordPage() {
             Reset your password
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email address and we&apos;ll send you a link to reset your
-            password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

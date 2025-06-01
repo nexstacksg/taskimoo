@@ -1,15 +1,20 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import authService, { User } from '@/services/authService';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import authService, { User } from "@/services/authService";
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (data: { email: string; password: string; firstName?: string; lastName?: string }) => Promise<void>;
+  register: (data: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }) => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
 
@@ -18,12 +23,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Try to get user profile - cookies will be sent automatically
       const user = await authService.getProfile();
-      
+
       if (user && user.id) {
         setUser(user);
       } else {
@@ -59,10 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const authData = await authService.login({ email, password });
       setUser(authData.user);
-      router.push('/');
+      router.push("/");
     } catch (error) {
       const err = error as { message?: string };
-      throw new Error(err.message || 'Invalid email or password');
+      throw new Error(err.message || "Invalid email or password");
     }
   };
 
@@ -73,11 +80,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Ignore logout errors
     } finally {
       setUser(null);
-      router.push('/login');
+      router.push("/login");
     }
   };
 
-  const register = async (data: { email: string; password: string; firstName?: string; lastName?: string }) => {
+  const register = async (data: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }) => {
     try {
       const authData = await authService.register({
         email: data.email,
@@ -86,10 +98,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lastName: data.lastName,
       });
       setUser(authData.user);
-      router.push('/');
+      router.push("/");
     } catch (error) {
       const err = error as { message?: string };
-      throw new Error(err.message || 'Registration failed');
+      throw new Error(err.message || "Registration failed");
     }
   };
 
@@ -99,7 +111,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, register, refreshAuth }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, logout, register, refreshAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );
