@@ -11,6 +11,10 @@
     "lint:be": "cd app-be && bun run lint",
     "lint:web": "cd app-web && bun run lint",
     "lint:admin": "cd app-admin && bun run lint",
+    "format": "bun run format:be && bun run format:web && bun run format:admin",
+    "format:be": "cd app-be && bun run format",
+    "format:web": "cd app-web && bun run format",
+    "format:admin": "cd app-admin && bun run format",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -19,16 +23,16 @@
   },
   "lint-staged": {
     "app-be/**/*.{ts,js}": [
-      "cd app-be && bun run lint",
-      "cd app-be && bun run build"
+      "cd app-be && bun run format",
+      "cd app-be && bun run lint"
     ],
-    "app-web/**/*.{ts,tsx,js,jsx}": [
-      "cd app-web && bun run lint",
-      "cd app-web && bun run build"
+    "app-web/**/*.{ts,tsx,js,jsx,json,css}": [
+      "cd app-web && bun run format",
+      "cd app-web && bun run lint"
     ],
-    "app-admin/**/*.{ts,tsx,js,jsx}": [
-      "cd app-admin && bun run lint",
-      "cd app-admin && bun run build"
+    "app-admin/**/*.{ts,tsx,js,jsx,json,css}": [
+      "cd app-admin && bun run format",
+      "cd app-admin && bun run lint"
     ]
   }
 }
