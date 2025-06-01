@@ -7,15 +7,17 @@ const API_BASE_URL =
 export async function POST() {
   try {
     const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken");
     const refreshToken = cookieStore.get("refreshToken");
 
-    // Call backend logout if refresh token exists
-    if (refreshToken) {
+    // Call backend logout if tokens exist
+    if (accessToken && refreshToken) {
       try {
         await fetch(`${API_BASE_URL}/auth/logout`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken.value}`,
           },
           body: JSON.stringify({ refreshToken: refreshToken.value }),
         });
