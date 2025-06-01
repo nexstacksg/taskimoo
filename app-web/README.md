@@ -67,8 +67,18 @@ Before running the web app, ensure you have:
 
 ### Test Credentials
 
+Use these test credentials to login:
+
 - **Email**: `user1@example.com`
 - **Password**: `Password123`
+
+### Login Form Features
+
+- **Email & Password Authentication**: Secure login with email and password fields
+- **Remember Me**: Option to stay logged in across browser sessions
+- **Forgot Password**: Link to password reset functionality
+- **Form Validation**: Real-time validation with error feedback
+- **Loading States**: Visual feedback during authentication
 
 ### Security Features
 
