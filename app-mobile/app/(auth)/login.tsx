@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter, Link } from "expo-router";
+import { Link } from "expo-router";
 import { Colors } from "@/constants/Colors";
 
 interface LoginFormData {
@@ -22,7 +22,6 @@ interface LoginFormData {
 }
 
 export default function LoginScreen() {
-  const router = useRouter();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -161,7 +160,7 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Text style={styles.footerText}>Don not have an account? </Text>
           <Link href="/(auth)/register" asChild>
             <TouchableOpacity>
               <Text style={styles.linkText}>Sign Up</Text>

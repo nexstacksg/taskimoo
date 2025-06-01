@@ -237,7 +237,7 @@ export class AuthService {
         refreshToken: newRefreshToken,
         expiresIn: 15 * 60 * 1000, // 15 minutes in milliseconds
       };
-    } catch (_error) {
+    } catch {
       throw new ApiError(
         "Invalid refresh token",
         HttpStatus.UNAUTHORIZED,

@@ -9,7 +9,6 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
-import { Colors } from "@/constants/Colors";
 
 export default function HomeScreen() {
   const { user, logout, refreshUser } = useAuth();

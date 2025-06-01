@@ -49,7 +49,7 @@ export default function EmailVerificationScreen() {
         <Text style={styles.title}>Verify Your Email</Text>
 
         <Text style={styles.description}>
-          We've sent a verification email to:
+          We have sent a verification email to:
         </Text>
 
         <Text style={styles.email}>{email}</Text>
@@ -81,7 +81,7 @@ export default function EmailVerificationScreen() {
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Didn't receive the email? Check your spam folder or try resending.
+          Did not receive the email? Check your spam folder or try resending.
         </Text>
       </View>
     </View>

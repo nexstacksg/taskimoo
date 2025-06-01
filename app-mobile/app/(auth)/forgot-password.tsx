@@ -139,7 +139,7 @@ export default function ForgotPasswordScreen() {
         ) : (
           <View style={styles.successContainer}>
             <Text style={styles.successText}>
-              We've sent password reset instructions to your email address.
+              We have sent password reset instructions to your email address.
             </Text>
             <TouchableOpacity
               style={styles.resendButton}
@@ -147,7 +147,7 @@ export default function ForgotPasswordScreen() {
               disabled={isLoading}
             >
               <Text style={styles.resendText}>
-                Didn't receive email? Resend
+                Did not receive email? Resend
               </Text>
             </TouchableOpacity>
           </View>

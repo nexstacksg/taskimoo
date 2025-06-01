@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "build": "bun run build:be && bun run build:web && bun run build:admin",
-    "build:be": "cd gm-be && bun run build",
-    "build:web": "cd gm-web && bun run build",
-    "build:admin": "cd gm-admin && bun run build",
+    "build:be": "cd app-be && bun run build",
+    "build:web": "cd app-web && bun run build",
+    "build:admin": "cd app-admin && bun run build",
     "lint": "bun run lint:be && bun run lint:web && bun run lint:admin",
-    "lint:be": "cd gm-be && bun run lint",
-    "lint:web": "cd gm-web && bun run lint",
-    "lint:admin": "cd gm-admin && bun run lint",
+    "lint:be": "cd app-be && bun run lint",
+    "lint:web": "cd app-web && bun run lint",
+    "lint:admin": "cd app-admin && bun run lint",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -18,17 +18,17 @@
     "lint-staged": "^15.2.0"
   },
   "lint-staged": {
-    "gm-be/**/*.{ts,js}": [
-      "cd gm-be && bun run lint",
-      "cd gm-be && bun run build"
+    "app-be/**/*.{ts,js}": [
+      "cd app-be && bun run lint",
+      "cd app-be && bun run build"
     ],
-    "gm-web/**/*.{ts,tsx,js,jsx}": [
-      "cd gm-web && bun run lint",
-      "cd gm-web && bun run build"
+    "app-web/**/*.{ts,tsx,js,jsx}": [
+      "cd app-web && bun run lint",
+      "cd app-web && bun run build"
     ],
-    "gm-admin/**/*.{ts,tsx,js,jsx}": [
-      "cd gm-admin && bun run lint",
-      "cd gm-admin && bun run build"
+    "app-admin/**/*.{ts,tsx,js,jsx}": [
+      "cd app-admin && bun run lint",
+      "cd app-admin && bun run build"
     ]
   }
 }
