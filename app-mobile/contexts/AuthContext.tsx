@@ -1,7 +1,17 @@
-import * as React from 'react';
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import authService, { type User, type LoginData, type RegisterData } from '../services/authService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as React from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import authService, {
+  type User,
+  type LoginData,
+  type RegisterData,
+} from "../services/authService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthContextType {
   user: User | null;
@@ -28,13 +38,14 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
 
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(currentUser);
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error("Error checking auth status:", error);
     } finally {
       setIsLoading(false);
     }
@@ -59,14 +70,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await authService.login(data);
       setUser(response.user);
-      
+
       // If user is pending verification, try to refresh their profile
-      if (response.user.status === 'PENDING_VERIFICATION') {
+      if (response.user.status === "PENDING_VERIFICATION") {
         setTimeout(async () => {
           try {
             await refreshUser();
           } catch (error) {
-            console.error('Error refreshing user after login:', error);
+            console.error("Error refreshing user after login:", error);
           }
         }, 2000);
       }
@@ -89,7 +100,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await authService.logout();
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       // Clear local data even if API call fails
       setUser(null);
     }
@@ -99,9 +110,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const updatedUser = await authService.getProfile();
       setUser(updatedUser);
-      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+      await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (error) {
-      console.error('Error refreshing user:', error);
+      console.error("Error refreshing user:", error);
     }
   };
 
