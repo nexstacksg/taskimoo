@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { taskService } from '../../services/task/taskService';
-import { projectService } from '../../services/project/projectService';
-import { workspaceService } from '../../services/workspace/workspaceService';
-import { ApiError } from '../../utils/ApiError';
-import { HttpStatus } from '@app/shared-types';
+import { Request, Response } from "express";
+import { taskService } from "../../services/task/taskService";
+import { projectService } from "../../services/project/projectService";
+import { workspaceService } from "../../services/workspace/workspaceService";
+import { ApiError } from "../../utils/ApiError";
+import { HttpStatus } from "@app/shared-types";
 
 export const taskController = {
   async createTask(req: Request, res: Response) {
@@ -13,18 +13,18 @@ export const taskController = {
     // Get project to check workspace access
     const project = await projectService.getProjectById(data.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission to create tasks
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const task = await taskService.createTask({
@@ -54,19 +54,19 @@ export const taskController = {
     } = req.query;
 
     if (!projectId) {
-      throw new ApiError('Project ID is required', HttpStatus.BAD_REQUEST);
+      throw new ApiError("Project ID is required", HttpStatus.BAD_REQUEST);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(String(projectId));
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const result = await taskService.getTasks({
@@ -95,19 +95,19 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     res.json({
@@ -123,24 +123,24 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const updatedTask = await taskService.updateTask(taskId, data, userId);
@@ -157,31 +157,31 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     await taskService.deleteTask(taskId);
 
     res.json({
       success: true,
-      message: 'Task deleted successfully',
+      message: "Task deleted successfully",
     });
   },
 
@@ -192,19 +192,19 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const comment = await taskService.addComment({
@@ -226,19 +226,19 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const comments = await taskService.getTaskComments(taskId);
@@ -256,24 +256,24 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const checklist = await taskService.addChecklist({
@@ -295,24 +295,24 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const item = await taskService.updateChecklistItem(itemId, { isCompleted });
@@ -330,19 +330,19 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const timeEntry = await taskService.trackTime({
@@ -365,19 +365,19 @@ export const taskController = {
 
     const task = await taskService.getTaskById(taskId);
     if (!task) {
-      throw new ApiError('Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(task.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
     const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const timeEntries = await taskService.getTaskTimeTracking(taskId);
@@ -385,6 +385,40 @@ export const taskController = {
     res.json({
       success: true,
       data: timeEntries,
+    });
+  },
+
+  async bulkUpdateTasks(req: Request, res: Response) {
+    const userId = req.user!.id;
+    const { taskIds, updates } = req.body;
+
+    // Check if user has access to all tasks (by checking first task's project)
+    const firstTask = await taskService.getTaskById(taskIds[0]);
+    if (!firstTask) {
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
+    }
+
+    const project = await projectService.getProjectById(firstTask.projectId);
+    if (!project) {
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user has permission
+    const hasPermission = await workspaceService.checkUserPermission(
+      project.workspaceId,
+      userId,
+      ["OWNER", "ADMIN", "WRITE"]
+    );
+
+    if (!hasPermission) {
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    const result = await taskService.bulkUpdateTasks(taskIds, updates, userId);
+
+    res.json({
+      success: true,
+      data: result,
     });
   },
 };
