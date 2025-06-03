@@ -4,13 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-App Template is a modern full-stack application template with authentication and user management, featuring three user tiers:
+TaskiMoo is a comprehensive AI-powered project management platform designed specifically for software development teams. It integrates traditional project management methodologies with cutting-edge AI capabilities to streamline the entire software development lifecycle - from requirements gathering to deployment monitoring.
 
-- **Users**: Standard users with basic access
-- **Managers**: Middle-level users with management capabilities  
-- **Super Admins**: Platform administrators with full system access
+### Key Features:
+- **AI-Powered Requirements Management**: Natural language processing, automatic categorization, and test case generation
+- **Persona & User Story Management**: Visual persona builder with AI-generated user stories
+- **Advanced Task Management**: Multiple views (Kanban, Gantt, Calendar, etc.) with AI predictions
+- **Real-time Collaboration**: Whiteboards, co-editing, and integrated communication
+- **Source Code & Deployment Integration**: Git repository connections and CI/CD pipeline management
+- **Automation Engine**: Event-driven workflows and process automation
+- **AI Assistant**: Natural language task creation, predictive analytics, and content generation
 
-The template provides a solid foundation for building web and mobile applications with user authentication, profile management, and role-based access control.
+### User Roles:
+- **Admin**: Full system access and configuration
+- **Project Manager**: Project planning and team management
+- **Developer**: Development tasks and code integration
+- **Tester**: Quality assurance and test management
+- **Viewer**: Read-only access to project information
+- **Guest**: Limited access for external stakeholders
 
 ## Repository Structure
 
@@ -79,9 +90,11 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 
 - RESTful API built with Express.js and TypeScript
 - Prisma ORM for database operations
-- JWT authentication with role-based access control
+- JWT authentication with role-based access control (Admin, Project Manager, Developer, Tester, Viewer, Guest)
 - Modular structure: controllers, services, models, middleware
 - API versioning (v1) in routes
+- WebSocket support for real-time collaboration features
+- Integration points for Git repositories and CI/CD pipelines
 
 ### Frontend Architecture
 
@@ -89,6 +102,9 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 - Server-side rendering and API routes
 - Tailwind CSS for styling
 - TypeScript for type safety
+- Real-time collaboration with WebSocket connections
+- Rich text editors and whiteboard canvas components
+- Drag-and-drop interfaces for task management
 
 ### Mobile Architecture
 
@@ -96,20 +112,36 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 - Tab-based navigation
 - Themed components system
 - Platform-specific code handling (iOS/Android)
+- Offline-first with data synchronization
+- Push notifications for task updates
+- Voice command integration
+
+### AI Integration Architecture
+
+- Natural language processing for requirement analysis
+- Machine learning models for predictive analytics
+- Content generation APIs for documentation
+- Intelligent task assignment and workload balancing
+- Pattern recognition for workflow optimization
 
 ### Key Integration Points
 
 - Authentication: JWT tokens shared between web and mobile
 - API: All clients communicate with app-be backend
-- Database: SQLite (dev)
+- Database: SQLite (dev), PostgreSQL (production)
 - Shared Types: All apps use @app/shared-types for TypeScript definitions
+- External Integrations: GitHub, GitLab, Slack, Jira, Figma
+- Real-time: WebSocket connections for collaborative features
+- AI Services: NLP and ML models for intelligent features
 
 ## Important Considerations
 
-1. **Simple Template**: This is a clean template focused on authentication and user management fundamentals.
+1. **AI-Powered Platform**: TaskiMoo leverages AI throughout the development lifecycle for requirements, task management, and predictions.
 
-2. **Role-based Access**: Different features and endpoints are available based on user roles (User, Manager, Super Admin).
+2. **Role-based Access**: Six distinct user roles with granular permissions for project management features.
 
-3. **Multi-platform**: Designed to work across web, admin portal, and mobile applications.
+3. **Multi-platform**: Comprehensive support for web, admin portal, mobile apps, and browser extensions.
 
-4. **Extensible**: Built with a modular architecture that can be extended for specific business needs.
+4. **Collaboration-First**: Real-time collaboration features including whiteboards, co-editing, and integrated communication.
+
+5. **Enterprise-Ready**: Built with security, compliance, and scalability in mind for software development teams.
