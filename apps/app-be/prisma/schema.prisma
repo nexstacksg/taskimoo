@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,20 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== MODELS ====================
-
-// User Model
 model User {
-  id                     String    @id @default(cuid())
-  email                  String    @unique
+  id                     String            @id @default(cuid())
+  email                  String            @unique
   password               String
   firstName              String
   lastName               String
-  role                   String    @default("DEVELOPER") // ADMIN, PROJECT_MANAGER, DEVELOPER, TESTER, VIEWER, GUEST
-  status                 String    @default("PENDING_VERIFICATION") // ACTIVE, INACTIVE, SUSPENDED, PENDING_VERIFICATION
-  skills                 String[]  @default([])
-  availability           String?   // JSON data for availability preferences
-  preferences            String?   // JSON data for user preferences
+  role                   String            @default("DEVELOPER")
+  status                 String            @default("PENDING_VERIFICATION")
+  skills                 String[]          @default([])
+  availability           String?
+  preferences            String?
   profilePhoto           String?
   refreshToken           String?
   lastLoginAt            DateTime?
@@ -31,100 +25,91 @@ model User {
   emailVerifiedAt        DateTime?
   passwordResetToken     String?
   passwordResetExpires   DateTime?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-
-  // Relations
-  auditLogs            AuditLog[]
-  ownedWorkspaces      Workspace[]      @relation("WorkspaceOwner")
-  workspaceMembers     WorkspaceMember[]
-  projects             Project[]        @relation("ProjectLead")
-  assignedTasks        Task[]           @relation("TaskAssignee")
-  reportedTasks        Task[]           @relation("TaskReporter")
-  requirements         Requirement[]    @relation("RequirementAuthor")
-  comments             Comment[]
-  activities           Activity[]
-  attachments          Attachment[]
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  activities             Activity[]
+  attachments            Attachment[]
+  auditLogs              AuditLog[]
+  comments               Comment[]
+  projects               Project[]         @relation("ProjectLead")
+  requirements           Requirement[]     @relation("RequirementAuthor")
+  assignedTasks          Task[]            @relation("TaskAssignee")
+  reportedTasks          Task[]            @relation("TaskReporter")
+  ownedWorkspaces        Workspace[]       @relation("WorkspaceOwner")
+  workspaceMembers       WorkspaceMember[]
 
   @@index([email])
 }
 
-// Audit Log Model
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   action    String
   entity    String
   entityId  String?
-  changes   String? // JSON data
+  changes   String?
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([entity, entityId])
 }
 
-// Workspace Model
 model Workspace {
-  id          String   @id @default(cuid())
+  id          String            @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String            @unique
   description String?
   logo        String?
-  status      String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED, TRIAL
-  plan        String   @default("FREE") // FREE, STARTER, PROFESSIONAL, ENTERPRISE
+  status      String            @default("ACTIVE")
+  plan        String            @default("FREE")
   ownerId     String
-  owner       User     @relation("WorkspaceOwner", fields: [ownerId], references: [id])
-  settings    String?  // JSON data
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  members     WorkspaceMember[]
-  spaces      Space[]
+  settings    String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
   projects    Project[]
+  spaces      Space[]
+  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
   invites     WorkspaceInvite[]
+  members     WorkspaceMember[]
 
   @@index([slug])
   @@index([ownerId])
 }
 
-// Workspace Member Model
 model WorkspaceMember {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   workspaceId  String
-  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  permission   String   @default("READ") // OWNER, ADMIN, WRITE, READ
-  joinedAt     DateTime @default(now())
-  lastActiveAt DateTime @default(now())
+  permission   String    @default("READ")
+  joinedAt     DateTime  @default(now())
+  lastActiveAt DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
   @@index([workspaceId])
   @@index([userId])
 }
 
-// Workspace Invite Model
 model WorkspaceInvite {
   id          String    @id @default(cuid())
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   email       String
-  permission  String    @default("READ") // ADMIN, WRITE, READ
+  permission  String    @default("READ")
   invitedBy   String
-  status      String    @default("PENDING") // PENDING, ACCEPTED, DECLINED, EXPIRED
+  status      String    @default("PENDING")
   expiresAt   DateTime
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
   @@index([email])
 }
 
-// Space Model (Department/Team level)
 model Space {
   id          String    @id @default(cuid())
   name        String
@@ -132,68 +117,60 @@ model Space {
   color       String?
   icon        String?
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  settings    String?   // JSON data
+  settings    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-
-  // Relations
   folders     Folder[]
   projects    Project[]
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
 }
 
-// Folder Model
 model Folder {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   description String?
   color       String?
   spaceId     String
-  space       Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   parentId    String?
-  parent      Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id])
-  children    Folder[] @relation("FolderHierarchy")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  parent      Folder?   @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children    Folder[]  @relation("FolderHierarchy")
+  space       Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   projects    Project[]
 
   @@index([spaceId])
   @@index([parentId])
 }
 
-// Project Model
 model Project {
-  id          String    @id @default(cuid())
-  name        String
-  key         String    // e.g., "TASK", "DEV"
-  description String?
-  status      String    @default("PLANNING") // PLANNING, ACTIVE, ON_HOLD, COMPLETED, ARCHIVED
-  priority    String    @default("MEDIUM") // CRITICAL, HIGH, MEDIUM, LOW
-  startDate   DateTime?
-  endDate     DateTime?
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  spaceId     String?
-  space       Space?    @relation(fields: [spaceId], references: [id])
-  folderId    String?
-  folder      Folder?   @relation(fields: [folderId], references: [id])
-  leadId      String?
-  lead        User?     @relation("ProjectLead", fields: [leadId], references: [id])
-  settings    String?   // JSON data
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relations
-  lists        List[]
-  tasks        Task[]
-  requirements Requirement[]
-  personas     Persona[]
-  sprints      Sprint[]
+  id           String        @id @default(cuid())
+  name         String
+  key          String
+  description  String?
+  status       String        @default("PLANNING")
+  priority     String        @default("MEDIUM")
+  startDate    DateTime?
+  endDate      DateTime?
+  workspaceId  String
+  spaceId      String?
+  folderId     String?
+  leadId       String?
+  settings     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   customFields CustomField[]
+  lists        List[]
+  personas     Persona[]
+  folder       Folder?       @relation(fields: [folderId], references: [id])
+  lead         User?         @relation("ProjectLead", fields: [leadId], references: [id])
+  space        Space?        @relation(fields: [spaceId], references: [id])
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  requirements Requirement[]
+  sprints      Sprint[]
+  tasks        Task[]
 
   @@unique([workspaceId, key])
   @@index([workspaceId])
@@ -202,7 +179,6 @@ model Project {
   @@index([leadId])
 }
 
-// List Model (Task grouping within projects)
 model List {
   id          String   @id @default(cuid())
   name        String
@@ -210,58 +186,53 @@ model List {
   color       String?
   position    Int      @default(0)
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  statuses    String[] @default([]) // Custom statuses for this list
+  statuses    String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  // Relations
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   tasks       Task[]
 
   @@index([projectId])
 }
 
-// Task Model
 model Task {
-  id             String    @id @default(cuid())
-  number         Int       // Auto-incremented within project
+  id             String           @id @default(cuid())
+  number         Int
   title          String
   description    String?
-  status         String    @default("TODO") // BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, TESTING, DONE, CANCELLED
-  priority       String    @default("MEDIUM") // URGENT, HIGH, MEDIUM, LOW
-  type           String    @default("TASK") // FEATURE, BUG, TASK, STORY, EPIC, SUBTASK, DOCUMENTATION, RESEARCH
+  status         String           @default("TODO")
+  priority       String           @default("MEDIUM")
+  type           String           @default("TASK")
   projectId      String
-  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   listId         String?
-  list           List?     @relation(fields: [listId], references: [id])
   parentId       String?
-  parent         Task?     @relation("TaskHierarchy", fields: [parentId], references: [id])
-  children       Task[]    @relation("TaskHierarchy")
   assigneeId     String?
-  assignee       User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
   reporterId     String
-  reporter       User      @relation("TaskReporter", fields: [reporterId], references: [id])
   dueDate        DateTime?
   startDate      DateTime?
   estimatedHours Float?
   actualHours    Float?
   storyPoints    Int?
-  tags           String[]  @default([])
-  customFields   String?   // JSON data
-  position       Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  // Relations
+  tags           String[]         @default([])
+  customFields   String?
+  position       Int              @default(0)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  activities     Activity[]
+  attachments    Attachment[]
+  checklists     Checklist[]
+  comments       Comment[]
+  assignee       User?            @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  list           List?            @relation(fields: [listId], references: [id])
+  parent         Task?            @relation("TaskHierarchy", fields: [parentId], references: [id])
+  children       Task[]           @relation("TaskHierarchy")
+  project        Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reporter       User             @relation("TaskReporter", fields: [reporterId], references: [id])
   dependencies   TaskDependency[] @relation("DependentTask")
   dependents     TaskDependency[] @relation("DependsOnTask")
-  comments       Comment[]
-  attachments    Attachment[]
-  activities     Activity[]
-  checklists     Checklist[]
-  timeTracking   TimeTracking[]
   linkedItems    TaskLink[]       @relation("SourceTask")
   linkedToItems  TaskLink[]       @relation("TargetTask")
+  timeTracking   TimeTracking[]
   userStories    UserStory[]
 
   @@unique([projectId, number])
@@ -273,47 +244,43 @@ model Task {
   @@index([status])
 }
 
-// Task Dependency Model
 model TaskDependency {
-  id             String   @id @default(cuid())
-  dependentId    String
-  dependent      Task     @relation("DependentTask", fields: [dependentId], references: [id], onDelete: Cascade)
-  dependsOnId    String
-  dependsOn      Task     @relation("DependsOnTask", fields: [dependsOnId], references: [id], onDelete: Cascade)
-  type           String   @default("FINISH_TO_START") // FINISH_TO_START, START_TO_START, FINISH_TO_FINISH, START_TO_FINISH
-  createdAt      DateTime @default(now())
+  id          String   @id @default(cuid())
+  dependentId String
+  dependsOnId String
+  type        String   @default("FINISH_TO_START")
+  createdAt   DateTime @default(now())
+  dependent   Task     @relation("DependentTask", fields: [dependentId], references: [id], onDelete: Cascade)
+  dependsOn   Task     @relation("DependsOnTask", fields: [dependsOnId], references: [id], onDelete: Cascade)
 
   @@unique([dependentId, dependsOnId])
   @@index([dependentId])
   @@index([dependsOnId])
 }
 
-// Requirement Model
 model Requirement {
-  id                 String   @id @default(cuid())
-  code               String   // e.g., "FR-001", "NFR-001"
+  id                 String               @id @default(cuid())
+  code               String
   title              String
-  description        String   @db.Text
-  type               String   @default("FUNCTIONAL") // FUNCTIONAL, NON_FUNCTIONAL, TECHNICAL, BUSINESS_RULE, CONSTRAINT
-  status             String   @default("DRAFT") // DRAFT, UNDER_REVIEW, APPROVED, IMPLEMENTED, REJECTED, DEPRECATED
-  priority           String   @default("SHOULD_HAVE") // MUST_HAVE, SHOULD_HAVE, COULD_HAVE, WONT_HAVE
+  description        String
+  type               String               @default("FUNCTIONAL")
+  status             String               @default("DRAFT")
+  priority           String               @default("SHOULD_HAVE")
   projectId          String
-  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   authorId           String
-  author             User     @relation("RequirementAuthor", fields: [authorId], references: [id])
-  version            Int      @default(1)
-  qualityScore       Float?   // AI-generated quality score 0-100
-  acceptanceCriteria String[] @default([])
-  dependencies       String[] @default([]) // IDs of other requirements
-  tags               String[] @default([])
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  // Relations
+  version            Int                  @default(1)
+  qualityScore       Float?
+  acceptanceCriteria String[]             @default([])
+  dependencies       String[]             @default([])
+  tags               String[]             @default([])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  testCases          String[]             @default([])
   attachments        Attachment[]
-  testCases          String[]     @default([]) // IDs of generated test cases
-  linkedTasks        TaskLink[]
+  author             User                 @relation("RequirementAuthor", fields: [authorId], references: [id])
+  project            Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
   history            RequirementHistory[]
+  linkedTasks        TaskLink[]
 
   @@unique([projectId, code])
   @@index([projectId])
@@ -322,134 +289,124 @@ model Requirement {
   @@index([status])
 }
 
-// Requirement History Model
 model RequirementHistory {
   id            String      @id @default(cuid())
   requirementId String
-  requirement   Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
   version       Int
-  changes       String      // JSON data
+  changes       String
   changedBy     String
   createdAt     DateTime    @default(now())
+  requirement   Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
 
   @@index([requirementId])
 }
 
-// Persona Model
 model Persona {
-  id                   String   @id @default(cuid())
+  id                   String      @id @default(cuid())
   name                 String
   avatar               String?
-  role                 String   // e.g., "End User", "Administrator"
+  role                 String
   age                  Int?
   location             String?
-  bio                  String   @db.Text
-  goals                String[] @default([])
-  frustrations         String[] @default([])
-  motivations          String[] @default([])
-  technicalProficiency String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  bio                  String
+  goals                String[]    @default([])
+  frustrations         String[]    @default([])
+  motivations          String[]    @default([])
+  technicalProficiency String      @default("MEDIUM")
   projectId            String
-  project              Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  // Relations
-  userStories          UserStory[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  project              Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userFlows            UserFlow[]
+  userStories          UserStory[]
 
   @@index([projectId])
 }
 
-// User Story Model
 model UserStory {
-  id                 String    @id @default(cuid())
+  id                 String   @id @default(cuid())
   title              String
-  asA                String    // Persona reference
-  iWant              String    @db.Text
-  soThat             String    @db.Text
-  acceptanceCriteria String[]  @default([])
-  priority           String    @default("MEDIUM") // HIGH, MEDIUM, LOW
+  asA                String
+  iWant              String
+  soThat             String
+  acceptanceCriteria String[] @default([])
+  priority           String   @default("MEDIUM")
   storyPoints        Int?
   personaId          String?
-  persona            Persona?  @relation(fields: [personaId], references: [id])
   epicId             String?
-  epic               Task?     @relation(fields: [epicId], references: [id])
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  epic               Task?    @relation(fields: [epicId], references: [id])
+  persona            Persona? @relation(fields: [personaId], references: [id])
 
   @@index([personaId])
   @@index([epicId])
 }
 
-// User Flow Model
 model UserFlow {
   id          String   @id @default(cuid())
   name        String
   description String?
-  type        String   @default("USER_JOURNEY") // USER_JOURNEY, PROCESS_FLOW, SYSTEM_WORKFLOW
+  type        String   @default("USER_JOURNEY")
   personaId   String?
-  persona     Persona? @relation(fields: [personaId], references: [id])
-  flowData    String   // JSON data for flow diagram
+  flowData    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  persona     Persona? @relation(fields: [personaId], references: [id])
 
   @@index([personaId])
 }
 
-// Sprint Model
 model Sprint {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   goal      String?
   projectId String
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   startDate DateTime
   endDate   DateTime
-  status    String    @default("PLANNED") // PLANNED, ACTIVE, COMPLETED, CANCELLED
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  status    String   @default("PLANNED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([status])
 }
 
-// Comment Model
 model Comment {
-  id          String   @id @default(cuid())
-  content     String   @db.Text
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  taskId      String?
-  task        Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  parentId    String?
-  parent      Comment? @relation("CommentReplies", fields: [parentId], references: [id])
-  replies     Comment[] @relation("CommentReplies")
-  mentions    String[] @default([]) // User IDs
-  reactions   String?  // JSON data
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String    @id @default(cuid())
+  content   String
+  authorId  String
+  taskId    String?
+  parentId  String?
+  mentions  String[]  @default([])
+  reactions String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id])
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  task      Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@index([taskId])
   @@index([authorId])
   @@index([parentId])
 }
 
-// Activity Model (Audit trail for tasks)
 model Activity {
   id        String   @id @default(cuid())
-  type      String   // e.g., "status_changed", "assignee_changed", "comment_added"
+  type      String
   taskId    String
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  changes   String   // JSON data
+  changes   String
   createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([taskId])
   @@index([userId])
 }
 
-// Attachment Model
 model Attachment {
   id            String       @id @default(cuid())
   filename      String
@@ -458,94 +415,87 @@ model Attachment {
   url           String
   thumbnailUrl  String?
   uploadedById  String
-  uploadedBy    User         @relation(fields: [uploadedById], references: [id])
   taskId        String?
-  task          Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
   requirementId String?
-  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: Cascade)
   createdAt     DateTime     @default(now())
+  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  task          Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploadedBy    User         @relation(fields: [uploadedById], references: [id])
 
   @@index([taskId])
   @@index([requirementId])
   @@index([uploadedById])
 }
 
-// Checklist Model
 model Checklist {
   id        String          @id @default(cuid())
   title     String
   taskId    String
-  task      Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
   position  Int             @default(0)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-
-  // Relations
+  task      Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
   items     ChecklistItem[]
 
   @@index([taskId])
 }
 
-// Checklist Item Model
 model ChecklistItem {
   id          String    @id @default(cuid())
   content     String
   isCompleted Boolean   @default(false)
   checklistId String
-  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   position    Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
 
   @@index([checklistId])
 }
 
-// Time Tracking Model
 model TimeTracking {
   id          String    @id @default(cuid())
   taskId      String
-  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId      String
   startTime   DateTime
   endTime     DateTime?
-  duration    Int?      // in minutes
+  duration    Int?
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@index([taskId])
   @@index([userId])
 }
 
-// Task Link Model (for linking tasks to requirements, etc.)
 model TaskLink {
   id            String       @id @default(cuid())
   sourceTaskId  String
-  sourceTask    Task         @relation("SourceTask", fields: [sourceTaskId], references: [id], onDelete: Cascade)
   targetTaskId  String?
-  targetTask    Task?        @relation("TargetTask", fields: [targetTaskId], references: [id], onDelete: Cascade)
   requirementId String?
-  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: Cascade)
-  linkType      String       // e.g., "relates_to", "blocks", "implements"
+  linkType      String
   createdAt     DateTime     @default(now())
+  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  sourceTask    Task         @relation("SourceTask", fields: [sourceTaskId], references: [id], onDelete: Cascade)
+  targetTask    Task?        @relation("TargetTask", fields: [targetTaskId], references: [id], onDelete: Cascade)
 
   @@index([sourceTaskId])
   @@index([targetTaskId])
   @@index([requirementId])
 }
 
-// Custom Field Model
 model CustomField {
-  id          String   @id @default(cuid())
-  name        String
-  type        String   // TEXT, NUMBER, DATE, DROPDOWN, CHECKBOX, USER
-  options     String[] @default([]) // For dropdown fields
-  isRequired  Boolean  @default(false)
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  entityType  String   // TASK, REQUIREMENT, etc.
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  type       String
+  options    String[] @default([])
+  isRequired Boolean  @default(false)
+  projectId  String
+  entityType String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([entityType])
