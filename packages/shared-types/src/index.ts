@@ -6,4 +6,4 @@ export * from './types/common';
 export * from './types/auth';
 
 // Export all models
-export * from './models/user';
+export * from './models';
