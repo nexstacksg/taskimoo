@@ -6,18 +6,21 @@ A modern full-stack application template with authentication and user management
 
 ```
 app-template/
+├── apps/
+│   ├── app-be/                # Backend API (Express.js + TypeScript + Prisma)
+│   ├── app-web/               # Customer web portal (Next.js)
+│   ├── app-admin/             # Admin portal (Next.js)
+│   └── app-mobile/            # Mobile app (React Native/Expo)
 ├── packages/
 │   └── shared-types/          # Shared TypeScript types and interfaces
-├── app-be/                    # Backend API (Express.js + TypeScript + Prisma)
-├── app-web/                   # Customer web portal (Next.js)
-├── app-admin/                 # Admin portal (Next.js)
-├── app-mobile/                # Mobile app (React Native/Expo)
 └── docs/                      # Documentation files
     ├── CLAUDE.md             # AI assistant instructions
     ├── architecture.md       # System architecture
     ├── developer.md          # Developer guide
     └── project.md            # Project overview
 ```
+
+This is a **Turbo-powered monorepo** using Bun workspaces for efficient dependency management and build orchestration.
 
 ## 🚀 Quick Start
 
@@ -35,59 +38,58 @@ app-template/
    cd app-template
    ```
 
-2. **Install dependencies for each app**
-
-   **Backend API:**
+2. **Install all dependencies** (from root directory)
    ```bash
-   cd app-be
    bun install
+   ```
+
+3. **Set up the backend**
+   ```bash
+   cd apps/app-be
    cp .env.example .env  # Configure your environment variables
    bun run prisma:migrate
    bun run prisma:seed
    ```
 
-   **Web Portal:**
-   ```bash
-   cd app-web
-   bun install
-   ```
-
-   **Admin Portal:**
-   ```bash
-   cd app-admin
-   bun install
-   ```
-
-   **Mobile App:**
-   ```bash
-   cd app-mobile
-   bun install
-   ```
-
 ### Running the Applications
 
-1. **Start the Backend API** (Port 4000)
+#### Run All Applications (from root)
+```bash
+bun run dev  # Starts all apps concurrently
+```
+
+#### Run Individual Applications
+
+1. **Backend API** (Port 4000)
    ```bash
-   cd app-be
-   bun run dev
+   # From root directory
+   bun run dev:be
+   # OR
+   bun run dev --filter=app-be
    ```
 
-2. **Start the Web Portal** (Port 3000)
+2. **Web Portal** (Port 3000)
    ```bash
-   cd app-web
-   bun run dev
+   # From root directory
+   bun run dev:web
+   # OR
+   bun run dev --filter=app-web
    ```
 
-3. **Start the Admin Portal** (Port 3100)
+3. **Admin Portal** (Port 3100)
    ```bash
-   cd app-admin
-   bun run dev
+   # From root directory
+   bun run dev:admin
+   # OR
+   bun run dev --filter=app-admin
    ```
 
-4. **Start the Mobile App**
+4. **Mobile App**
    ```bash
-   cd app-mobile
-   bun run start
+   # From root directory
+   bun run dev:mobile
+   # OR
+   bun run dev --filter=app-mobile
    # Press 'i' for iOS or 'a' for Android
    ```
 
@@ -110,12 +112,12 @@ packages/shared-types/
 
 ### Usage
 
-The shared-types package is linked locally using the `file:` protocol in each app's `package.json`:
+The shared-types package is automatically linked via Bun workspaces. Each app references it as:
 
 ```json
 {
   "dependencies": {
-    "@app/shared-types": "file:../packages/shared-types"
+    "@app/shared-types": "*"
   }
 }
 ```
@@ -162,16 +164,47 @@ bun run prisma:generate
 
 ### Build Commands
 
+#### Build All Applications
 ```bash
-# Build backend
-cd app-be && bun run build
+# From root directory
+bun run build  # Builds all apps in dependency order
+```
 
-# Build web apps
-cd app-web && bun run build
-cd app-admin && bun run build
+#### Build Individual Applications
+```bash
+# Build specific app (from root)
+bun run build --filter=app-be      # Backend only
+bun run build --filter=app-web     # Web app only
+bun run build --filter=app-admin   # Admin app only
 
-# Build mobile app
-cd app-mobile && eas build
+# Or use the convenience scripts
+bun run build:be     # Build backend
+bun run build:web    # Build web app
+bun run build:admin  # Build admin app
+
+# Build shared packages
+bun run build --filter=@app/shared-types
+
+# Build mobile app (requires EAS CLI)
+cd apps/app-mobile && eas build
+```
+
+#### Other Turbo Commands
+```bash
+# Run linting across all apps
+bun run lint
+
+# Run linting for specific app
+bun run lint --filter=app-be
+
+# Format all code
+bun run format
+
+# Run tests
+bun run test
+
+# Clean all build artifacts
+bun run clean
 ```
 
 ### Testing
