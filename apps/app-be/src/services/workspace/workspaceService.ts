@@ -23,11 +23,11 @@ export const workspaceService = {
 
     const workspace = await prisma.workspace.create({
       data: {
-        ...data,
+        name: data.name,
+        description: data.description,
+        logo: data.logo,
         slug,
-        owner: {
-          connect: { id: data.ownerId },
-        },
+        ownerId: data.ownerId,
         // Automatically add owner as a member
         members: {
           create: {

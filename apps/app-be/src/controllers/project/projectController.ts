@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { projectService } from '../../services/project/projectService';
-import { workspaceService } from '../../services/workspace/workspaceService';
-import { ApiError } from '../../utils/ApiError';
-import { HttpStatus } from '@app/shared-types';
+import { Request, Response } from "express";
+import { projectService } from "../../services/project/projectService";
+import { workspaceService } from "../../services/workspace/workspaceService";
+import { ApiError } from "../../utils/ApiError";
+import { HttpStatus, UserRole } from "@app/shared-types";
 
 export const projectController = {
   async createProject(req: Request, res: Response) {
@@ -13,11 +13,11 @@ export const projectController = {
     const hasAccess = await workspaceService.checkUserPermission(
       data.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      [UserRole.ADMIN]
     );
 
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const project = await projectService.createProject(data);
@@ -30,16 +30,26 @@ export const projectController = {
 
   async getProjects(req: Request, res: Response) {
     const userId = req.user!.id;
-    const { workspaceId, spaceId, folderId, status, page = 1, limit = 20 } = req.query;
+    const {
+      workspaceId,
+      spaceId,
+      folderId,
+      status,
+      page = 1,
+      limit = 20,
+    } = req.query;
 
     if (!workspaceId) {
-      throw new ApiError('Workspace ID is required', HttpStatus.BAD_REQUEST);
+      throw new ApiError("Workspace ID is required", HttpStatus.BAD_REQUEST);
     }
 
     // Check if user has access to the workspace
-    const hasAccess = await workspaceService.checkUserAccess(String(workspaceId), userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      String(workspaceId),
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const result = await projectService.getProjects({
@@ -65,13 +75,16 @@ export const projectController = {
     const project = await projectService.getProjectById(projectId);
 
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access to the workspace
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     res.json({
@@ -87,18 +100,18 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission to update
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const updatedProject = await projectService.updateProject(projectId, data);
@@ -115,25 +128,25 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission to delete
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     await projectService.deleteProject(projectId);
 
     res.json({
       success: true,
-      message: 'Project deleted successfully',
+      message: "Project deleted successfully",
     });
   },
 
@@ -144,18 +157,18 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const list = await projectService.createList({
@@ -175,13 +188,16 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const lists = await projectService.getProjectLists(projectId);
@@ -199,18 +215,18 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const list = await projectService.updateList(listId, data);
@@ -227,25 +243,25 @@ export const projectController = {
 
     const project = await projectService.getProjectById(projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     await projectService.deleteList(listId);
 
     res.json({
       success: true,
-      message: 'List deleted successfully',
+      message: "List deleted successfully",
     });
   },
 };

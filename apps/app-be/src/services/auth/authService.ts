@@ -70,7 +70,7 @@ export class AuthService {
         password: passwordHash,
         firstName: data.firstName || "",
         lastName: data.lastName || "",
-        role: UserRole.USER,
+        role: UserRole.DEVELOPER,
         status: UserStatus.PENDING_VERIFICATION,
         emailVerificationToken,
       },

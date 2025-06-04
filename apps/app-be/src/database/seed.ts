@@ -23,7 +23,7 @@ async function main() {
       password: hashedPassword,
       firstName: "Super",
       lastName: "Admin",
-      role: UserRole.SUPER_ADMIN,
+      role: UserRole.ADMIN,
       status: UserStatus.ACTIVE,
       emailVerifiedAt: new Date(),
     },
@@ -36,7 +36,7 @@ async function main() {
       password: hashedPassword,
       firstName: "John",
       lastName: "Manager",
-      role: UserRole.MANAGER,
+      role: UserRole.PROJECT_MANAGER,
       status: UserStatus.ACTIVE,
       emailVerifiedAt: new Date(),
     },
@@ -50,7 +50,7 @@ async function main() {
         password: hashedPassword,
         firstName: "Alice",
         lastName: "Johnson",
-        role: UserRole.USER,
+        role: UserRole.DEVELOPER,
         status: UserStatus.ACTIVE,
         emailVerifiedAt: new Date(),
       },
@@ -61,7 +61,7 @@ async function main() {
         password: hashedPassword,
         firstName: "Bob",
         lastName: "Smith",
-        role: UserRole.USER,
+        role: UserRole.DEVELOPER,
         status: UserStatus.ACTIVE,
         emailVerifiedAt: new Date(),
       },
@@ -72,7 +72,7 @@ async function main() {
         password: hashedPassword,
         firstName: "Carol",
         lastName: "Williams",
-        role: UserRole.USER,
+        role: UserRole.DEVELOPER,
         status: UserStatus.PENDING_VERIFICATION,
       },
     }),
@@ -110,14 +110,14 @@ async function main() {
   console.log("✅ Seed completed successfully!");
 
   console.log("\n📊 Created:");
-  console.log("- 1 Super Admin");
-  console.log("- 1 Manager");
-  console.log("- 3 Regular Users");
+  console.log("- 1 Admin");
+  console.log("- 1 Project Manager");
+  console.log("- 3 Developers");
   console.log("- 2 Audit logs");
 
   console.log("\n🔑 Login credentials:");
-  console.log("Super Admin: super.admin@example.com / Password123");
-  console.log("Manager: manager@example.com / Password123");
+  console.log("Admin: super.admin@example.com / Password123");
+  console.log("Project Manager: manager@example.com / Password123");
   console.log("User 1: user1@example.com / Password123");
   console.log("User 2: user2@example.com / Password123");
   console.log("User 3: user3@example.com / Password123 (pending verification)");

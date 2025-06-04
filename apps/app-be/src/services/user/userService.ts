@@ -34,7 +34,7 @@ export class UserService {
         password: hashedPassword,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role || UserRole.USER,
+        role: data.role || UserRole.DEVELOPER,
         status: UserStatus.PENDING_VERIFICATION,
       },
       select: {
@@ -287,7 +287,7 @@ export class UserService {
 
     // Define permissions based on role
     const permissions: Record<UserRole, string[]> = {
-      [UserRole.SUPER_ADMIN]: [
+      [UserRole.ADMIN]: [
         "user:manage",
         "user:create",
         "user:delete",
@@ -296,13 +296,16 @@ export class UserService {
         "audit:view",
         "settings:manage",
       ],
-      [UserRole.MANAGER]: [
+      [UserRole.PROJECT_MANAGER]: [
         "user:view",
         "user:create",
         "user:update",
         "audit:view",
       ],
-      [UserRole.USER]: ["profile:view", "profile:update"],
+      [UserRole.DEVELOPER]: ["profile:view", "profile:update"],
+      [UserRole.TESTER]: ["profile:view", "profile:update"],
+      [UserRole.VIEWER]: ["profile:view"],
+      [UserRole.GUEST]: ["profile:view"],
     };
 
     return permissions[user.role as UserRole] || [];

@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify user is an admin or manager (simplified check)
+    // Verify user is an admin or project manager (simplified check)
     if (
-      data.data.user.role !== UserRole.MANAGER &&
-      data.data.user.role !== UserRole.SUPER_ADMIN
+      data.data.user.role !== UserRole.PROJECT_MANAGER &&
+      data.data.user.role !== UserRole.ADMIN
     ) {
       return NextResponse.json(
         { error: { message: "Access denied. Admin privileges required." } },

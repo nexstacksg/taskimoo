@@ -44,8 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Verify admin role
       if (
-        user.role !== UserRole.MANAGER &&
-        user.role !== UserRole.SUPER_ADMIN
+        user.role !== UserRole.PROJECT_MANAGER &&
+        user.role !== UserRole.ADMIN
       ) {
         console.log("User role check failed:", user.role);
         throw new Error("Admin access required");
@@ -69,8 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Verify admin role
       if (
-        authData.user.role !== UserRole.MANAGER &&
-        authData.user.role !== UserRole.SUPER_ADMIN
+        authData.user.role !== UserRole.PROJECT_MANAGER &&
+        authData.user.role !== UserRole.ADMIN
       ) {
         console.log("Admin role check failed:", authData.user.role);
         throw new Error("Admin access required");

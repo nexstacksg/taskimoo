@@ -4,7 +4,6 @@ import {
   HttpStatus,
   ICreateProject,
   IUpdateProject,
-  ProjectStatus,
 } from "@app/shared-types";
 
 export const projectService = {
@@ -360,6 +359,32 @@ export const projectService = {
     return lists;
   },
 
+  async getListById(listId: string) {
+    const list = await prisma.list.findUnique({
+      where: { id: listId },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            workspaceId: true,
+          },
+        },
+        _count: {
+          select: {
+            tasks: true,
+          },
+        },
+      },
+    });
+
+    if (!list) {
+      throw new ApiError("List not found", HttpStatus.NOT_FOUND);
+    }
+
+    return list;
+  },
+
   async updateList(
     listId: string,
     data: {
@@ -403,10 +428,29 @@ export const projectService = {
   },
 
   async reorderLists(projectId: string, listIds: string[]) {
+    // First validate that all lists belong to the specified project
+    const lists = await prisma.list.findMany({
+      where: {
+        id: { in: listIds },
+        projectId: projectId,
+      },
+      select: { id: true },
+    });
+
+    if (lists.length !== listIds.length) {
+      throw new ApiError(
+        "Some lists do not belong to the specified project",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     // Update positions for all lists
     const updates = listIds.map((listId, index) =>
       prisma.list.update({
-        where: { id: listId },
+        where: {
+          id: listId,
+          projectId: projectId, // Additional safety check
+        },
         data: { position: index },
       })
     );

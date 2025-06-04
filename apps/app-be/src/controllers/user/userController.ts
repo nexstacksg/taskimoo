@@ -24,7 +24,7 @@ export const createUser = async (
     }
 
     // Only admins and managers can create users
-    if (req.user.role === UserRole.USER) {
+    if (req.user.role === UserRole.DEVELOPER) {
       throw new ApiError(
         "Permission denied",
         HttpStatus.FORBIDDEN,
@@ -126,7 +126,7 @@ export const updateUser = async (
     }
 
     // Users can update their own profile, managers/admins can update others
-    if (req.user.id !== req.params.id && req.user.role === UserRole.USER) {
+    if (req.user.id !== req.params.id && req.user.role === UserRole.DEVELOPER) {
       throw new ApiError(
         "Permission denied",
         HttpStatus.FORBIDDEN,
@@ -163,8 +163,8 @@ export const deleteUser = async (
 
     // Only admins can delete users
     if (
-      req.user.role !== UserRole.SUPER_ADMIN &&
-      req.user.role !== UserRole.MANAGER
+      req.user.role !== UserRole.ADMIN &&
+      req.user.role !== UserRole.PROJECT_MANAGER
     ) {
       throw new ApiError(
         "Permission denied",
@@ -201,7 +201,7 @@ export const updateUserStatus = async (
     }
 
     // Only managers and admins can update user status
-    if (req.user.role === UserRole.USER) {
+    if (req.user.role === UserRole.DEVELOPER) {
       throw new ApiError(
         "Permission denied",
         HttpStatus.FORBIDDEN,

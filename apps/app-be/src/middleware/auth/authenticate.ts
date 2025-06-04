@@ -3,7 +3,7 @@ import { verifyAccessToken } from "../../config/jwt";
 import { extractBearerToken } from "../../utils/auth";
 import { ApiError } from "../error/errorHandler";
 import prisma from "../../database/client";
-import { UserRole, UserStatus } from "@app/shared-types";
+import { UserRole, UserStatus, IUser } from "@app/shared-types";
 
 export interface AuthRequest<
   P = any,
@@ -11,12 +11,7 @@ export interface AuthRequest<
   ReqBody = any,
   ReqQuery = any,
 > extends Request<P, ResBody, ReqBody, ReqQuery> {
-  user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    status: UserStatus;
-  };
+  user?: IUser;
 }
 
 export const authenticate = async (
@@ -41,8 +36,15 @@ export const authenticate = async (
       select: {
         id: true,
         email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        profilePhoto: true,
         role: true,
         status: true,
+        emailVerifiedAt: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -58,8 +60,15 @@ export const authenticate = async (
     req.user = {
       id: user.id,
       email: user.email,
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profilePhoto: user.profilePhoto,
       role: user.role as UserRole,
       status: user.status as UserStatus,
+      emailVerified: !!user.emailVerifiedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
 
     next();
@@ -88,8 +97,15 @@ export const optionalAuth = async (
         select: {
           id: true,
           email: true,
+          password: true,
+          firstName: true,
+          lastName: true,
+          profilePhoto: true,
           role: true,
           status: true,
+          emailVerifiedAt: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
 
@@ -97,8 +113,15 @@ export const optionalAuth = async (
         req.user = {
           id: user.id,
           email: user.email,
+          password: user.password,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profilePhoto: user.profilePhoto,
           role: user.role as UserRole,
           status: user.status as UserStatus,
+          emailVerified: !!user.emailVerifiedAt,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         };
       }
     }

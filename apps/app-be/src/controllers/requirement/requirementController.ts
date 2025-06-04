@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { requirementService } from '../../services/requirement/requirementService';
-import { projectService } from '../../services/project/projectService';
-import { workspaceService } from '../../services/workspace/workspaceService';
-import { ApiError } from '../../utils/ApiError';
-import { HttpStatus } from '@app/shared-types';
+import { Request, Response } from "express";
+import { requirementService } from "../../services/requirement/requirementService";
+import { projectService } from "../../services/project/projectService";
+import { workspaceService } from "../../services/workspace/workspaceService";
+import { ApiError } from "../../utils/ApiError";
+import { HttpStatus } from "@app/shared-types";
 
 export const requirementController = {
   async createRequirement(req: Request, res: Response) {
@@ -13,18 +13,18 @@ export const requirementController = {
     // Get project to check workspace access
     const project = await projectService.getProjectById(data.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission to create requirements
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const requirement = await requirementService.createRequirement({
@@ -40,30 +40,33 @@ export const requirementController = {
 
   async getRequirements(req: Request, res: Response) {
     const userId = req.user!.id;
-    const { 
-      projectId, 
-      type, 
-      status, 
+    const {
+      projectId,
+      type,
+      status,
       priority,
       search,
-      page = 1, 
-      limit = 20 
+      page = 1,
+      limit = 20,
     } = req.query;
 
     if (!projectId) {
-      throw new ApiError('Project ID is required', HttpStatus.BAD_REQUEST);
+      throw new ApiError("Project ID is required", HttpStatus.BAD_REQUEST);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(String(projectId));
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const result = await requirementService.getRequirements({
@@ -87,21 +90,25 @@ export const requirementController = {
     const { requirementId } = req.params;
     const userId = req.user!.id;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     res.json({
@@ -115,30 +122,31 @@ export const requirementController = {
     const userId = req.user!.id;
     const data = req.body;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const updatedRequirement = await requirementService.updateRequirement(
-      requirementId, 
+      requirementId,
       data,
       userId
     );
@@ -153,33 +161,34 @@ export const requirementController = {
     const { requirementId } = req.params;
     const userId = req.user!.id;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     await requirementService.deleteRequirement(requirementId);
 
     res.json({
       success: true,
-      message: 'Requirement deleted successfully',
+      message: "Requirement deleted successfully",
     });
   },
 
@@ -187,21 +196,25 @@ export const requirementController = {
     const { requirementId } = req.params;
     const userId = req.user!.id;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const analysis = await requirementService.analyzeRequirement(requirementId);
@@ -216,26 +229,27 @@ export const requirementController = {
     const { requirementId } = req.params;
     const userId = req.user!.id;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const testCases = await requirementService.generateTestCases(requirementId);
@@ -250,24 +264,29 @@ export const requirementController = {
     const { requirementId } = req.params;
     const userId = req.user!.id;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access
-    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      project.workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
-    const history = await requirementService.getRequirementHistory(requirementId);
+    const history =
+      await requirementService.getRequirementHistory(requirementId);
 
     res.json({
       success: true,
@@ -280,26 +299,27 @@ export const requirementController = {
     const userId = req.user!.id;
     const { taskId } = req.body;
 
-    const requirement = await requirementService.getRequirementById(requirementId);
+    const requirement =
+      await requirementService.getRequirementById(requirementId);
     if (!requirement) {
-      throw new ApiError('Requirement not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Requirement not found", HttpStatus.NOT_FOUND);
     }
 
     // Get project to check workspace access
     const project = await projectService.getProjectById(requirement.projectId);
     if (!project) {
-      throw new ApiError('Project not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has permission
     const hasPermission = await workspaceService.checkUserPermission(
       project.workspaceId,
       userId,
-      ['OWNER', 'ADMIN', 'WRITE']
+      ["OWNER", "ADMIN", "WRITE"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const link = await requirementService.linkToTask(requirementId, taskId);

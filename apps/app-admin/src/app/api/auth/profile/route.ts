@@ -28,8 +28,8 @@ export async function GET() {
     // Quick check for admin role
     if (
       !adminRole ||
-      (adminRole.value !== UserRole.MANAGER &&
-        adminRole.value !== UserRole.SUPER_ADMIN)
+      (adminRole.value !== UserRole.PROJECT_MANAGER &&
+        adminRole.value !== UserRole.ADMIN)
     ) {
       return NextResponse.json(
         { error: { message: "Admin access required" } },
@@ -63,8 +63,8 @@ export async function GET() {
 
     // Double-check admin role from backend response
     if (
-      data.data.user.role !== UserRole.MANAGER &&
-      data.data.user.role !== UserRole.SUPER_ADMIN
+      data.data.user.role !== UserRole.PROJECT_MANAGER &&
+      data.data.user.role !== UserRole.ADMIN
     ) {
       return NextResponse.json(
         { error: { message: "Admin access required" } },

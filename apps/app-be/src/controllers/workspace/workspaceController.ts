@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { workspaceService } from '../../services/workspace/workspaceService';
-import { ApiError } from '../../utils/ApiError';
-import { HttpStatus } from '@app/shared-types';
+import { Request, Response } from "express";
+import { workspaceService } from "../../services/workspace/workspaceService";
+import { ApiError } from "../../utils/ApiError";
+import { HttpStatus } from "@app/shared-types";
 
 export const workspaceController = {
   async createWorkspace(req: Request, res: Response) {
@@ -42,13 +42,16 @@ export const workspaceController = {
     const workspace = await workspaceService.getWorkspaceById(workspaceId);
 
     if (!workspace) {
-      throw new ApiError('Workspace not found', HttpStatus.NOT_FOUND);
+      throw new ApiError("Workspace not found", HttpStatus.NOT_FOUND);
     }
 
     // Check if user has access to this workspace
-    const hasAccess = await workspaceService.checkUserAccess(workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     res.json({
@@ -66,11 +69,11 @@ export const workspaceController = {
     const hasPermission = await workspaceService.checkUserPermission(
       workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const workspace = await workspaceService.updateWorkspace(workspaceId, data);
@@ -89,18 +92,21 @@ export const workspaceController = {
     const isOwner = await workspaceService.checkUserPermission(
       workspaceId,
       userId,
-      ['OWNER']
+      ["OWNER"]
     );
 
     if (!isOwner) {
-      throw new ApiError('Only workspace owner can delete workspace', HttpStatus.FORBIDDEN);
+      throw new ApiError(
+        "Only workspace owner can delete workspace",
+        HttpStatus.FORBIDDEN
+      );
     }
 
     await workspaceService.deleteWorkspace(workspaceId);
 
     res.json({
       success: true,
-      message: 'Workspace deleted successfully',
+      message: "Workspace deleted successfully",
     });
   },
 
@@ -113,11 +119,11 @@ export const workspaceController = {
     const hasPermission = await workspaceService.checkUserPermission(
       workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const invite = await workspaceService.inviteToWorkspace({
@@ -150,9 +156,12 @@ export const workspaceController = {
     const userId = req.user!.id;
 
     // Check if user has access to this workspace
-    const hasAccess = await workspaceService.checkUserAccess(workspaceId, userId);
+    const hasAccess = await workspaceService.checkUserAccess(
+      workspaceId,
+      userId
+    );
     if (!hasAccess) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     const members = await workspaceService.getWorkspaceMembers(workspaceId);
@@ -171,18 +180,18 @@ export const workspaceController = {
     const hasPermission = await workspaceService.checkUserPermission(
       workspaceId,
       userId,
-      ['OWNER', 'ADMIN']
+      ["OWNER", "ADMIN"]
     );
 
     if (!hasPermission) {
-      throw new ApiError('Access denied', HttpStatus.FORBIDDEN);
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
     }
 
     await workspaceService.removeWorkspaceMember(workspaceId, memberId);
 
     res.json({
       success: true,
-      message: 'Member removed successfully',
+      message: "Member removed successfully",
     });
   },
 
@@ -195,11 +204,14 @@ export const workspaceController = {
     const isOwner = await workspaceService.checkUserPermission(
       workspaceId,
       userId,
-      ['OWNER']
+      ["OWNER"]
     );
 
     if (!isOwner) {
-      throw new ApiError('Only workspace owner can change permissions', HttpStatus.FORBIDDEN);
+      throw new ApiError(
+        "Only workspace owner can change permissions",
+        HttpStatus.FORBIDDEN
+      );
     }
 
     const member = await workspaceService.updateMemberPermission(

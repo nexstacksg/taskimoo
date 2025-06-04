@@ -5,7 +5,6 @@ import {
   ICreateRequirement,
   IUpdateRequirement,
   RequirementType,
-  RequirementStatus,
 } from "@app/shared-types";
 
 export const requirementService = {
@@ -420,17 +419,23 @@ export const requirementService = {
 
     // Basic quality checks
     if (requirement.title.length < 10) {
-      suggestions.push("Title should be more descriptive (at least 10 characters)");
+      suggestions.push(
+        "Title should be more descriptive (at least 10 characters)"
+      );
       qualityScore -= 10;
     }
 
     if (requirement.description.length < 50) {
-      suggestions.push("Description should be more detailed (at least 50 characters)");
+      suggestions.push(
+        "Description should be more detailed (at least 50 characters)"
+      );
       qualityScore -= 15;
     }
 
     if (requirement.acceptanceCriteria.length === 0) {
-      suggestions.push("Add acceptance criteria to make the requirement testable");
+      suggestions.push(
+        "Add acceptance criteria to make the requirement testable"
+      );
       qualityScore -= 20;
     }
 
@@ -450,7 +455,9 @@ export const requirementService = {
       requirement.type === "FUNCTIONAL" &&
       !requirement.description.toLowerCase().includes("should")
     ) {
-      suggestions.push("Functional requirements should clearly state what the system should do");
+      suggestions.push(
+        "Functional requirements should clearly state what the system should do"
+      );
       qualityScore -= 5;
     }
 
@@ -557,7 +564,10 @@ export const requirementService = {
     });
 
     if (existingLink) {
-      throw new ApiError("Task is already linked to this requirement", HttpStatus.CONFLICT);
+      throw new ApiError(
+        "Task is already linked to this requirement",
+        HttpStatus.CONFLICT
+      );
     }
 
     const link = await prisma.taskLink.create({
@@ -598,43 +608,49 @@ export const requirementService = {
   },
 
   async getRequirementCoverage(projectId: string) {
-    const [
-      totalRequirements,
-      implementedRequirements,
-      testedRequirements,
-    ] = await Promise.all([
-      prisma.requirement.count({
-        where: { projectId },
-      }),
-      prisma.requirement.count({
-        where: {
-          projectId,
-          status: "IMPLEMENTED",
-        },
-      }),
-      prisma.requirement.count({
-        where: {
-          projectId,
-          testCases: {
-            not: {
-              equals: [],
+    const [totalRequirements, implementedRequirements, testedRequirements] =
+      await Promise.all([
+        prisma.requirement.count({
+          where: { projectId },
+        }),
+        prisma.requirement.count({
+          where: {
+            projectId,
+            status: "IMPLEMENTED",
+          },
+        }),
+        prisma.requirement.count({
+          where: {
+            projectId,
+            NOT: {
+              testCases: {
+                equals: [],
+              },
             },
           },
-        },
-      }),
-    ]);
+        }),
+      ]);
 
     return {
       total: totalRequirements,
       implemented: implementedRequirements,
       tested: testedRequirements,
       implementationCoverage:
-        totalRequirements > 0 ? (implementedRequirements / totalRequirements) * 100 : 0,
-      testCoverage: totalRequirements > 0 ? (testedRequirements / totalRequirements) * 100 : 0,
+        totalRequirements > 0
+          ? (implementedRequirements / totalRequirements) * 100
+          : 0,
+      testCoverage:
+        totalRequirements > 0
+          ? (testedRequirements / totalRequirements) * 100
+          : 0,
     };
   },
 
-  async detectDuplicates(projectId: string, title: string, description: string) {
+  async detectDuplicates(
+    projectId: string,
+    title: string,
+    description: string
+  ) {
     // Simple similarity check - could be enhanced with AI
     const requirements = await prisma.requirement.findMany({
       where: { projectId },
@@ -648,7 +664,10 @@ export const requirementService = {
 
     const potentialDuplicates = requirements.filter((req) => {
       const titleSimilarity = this.calculateSimilarity(title, req.title);
-      const descSimilarity = this.calculateSimilarity(description, req.description);
+      const descSimilarity = this.calculateSimilarity(
+        description,
+        req.description
+      );
 
       return titleSimilarity > 0.8 || descSimilarity > 0.7;
     });

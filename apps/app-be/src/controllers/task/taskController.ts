@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { taskService } from "../../services/task/taskService";
+import { taskService } from "../../services/task";
 import { projectService } from "../../services/project/projectService";
 import { workspaceService } from "../../services/workspace/workspaceService";
 import { ApiError } from "../../utils/ApiError";
@@ -289,7 +289,7 @@ export const taskController = {
   },
 
   async updateChecklistItem(req: Request, res: Response) {
-    const { taskId, checklistId, itemId } = req.params;
+    const { taskId, itemId } = req.params;
     const userId = req.user!.id;
     const { isCompleted } = req.body;
 
@@ -419,6 +419,140 @@ export const taskController = {
     res.json({
       success: true,
       data: result,
+    });
+  },
+
+  // Task Dependencies
+  async addDependency(req: Request, res: Response) {
+    const { taskId } = req.params;
+    const { dependsOnId } = req.body;
+    const userId = req.user!.id;
+
+    const task = await taskService.getTaskById(taskId);
+    if (!task) {
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Get project to check workspace access
+    const project = await projectService.getProjectById(task.projectId);
+    if (!project) {
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user has permission
+    const hasPermission = await workspaceService.checkUserPermission(
+      project.workspaceId,
+      userId,
+      ["OWNER", "ADMIN", "WRITE"]
+    );
+
+    if (!hasPermission) {
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    const dependency = await taskService.addDependency(taskId, dependsOnId, userId);
+
+    res.status(HttpStatus.CREATED).json({
+      success: true,
+      data: dependency,
+    });
+  },
+
+  async removeDependency(req: Request, res: Response) {
+    const { taskId, dependencyId } = req.params;
+    const userId = req.user!.id;
+
+    const task = await taskService.getTaskById(taskId);
+    if (!task) {
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Get project to check workspace access
+    const project = await projectService.getProjectById(task.projectId);
+    if (!project) {
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user has permission
+    const hasPermission = await workspaceService.checkUserPermission(
+      project.workspaceId,
+      userId,
+      ["OWNER", "ADMIN", "WRITE"]
+    );
+
+    if (!hasPermission) {
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    await taskService.removeDependency(taskId, dependencyId, userId);
+
+    res.json({
+      success: true,
+      message: "Dependency removed successfully",
+    });
+  },
+
+  async getDependencies(req: Request, res: Response) {
+    const { taskId } = req.params;
+    const userId = req.user!.id;
+
+    const task = await taskService.getTaskById(taskId);
+    if (!task) {
+      throw new ApiError("Task not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Get project to check workspace access
+    const project = await projectService.getProjectById(task.projectId);
+    if (!project) {
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user has access
+    const hasAccess = await workspaceService.checkUserAccess(project.workspaceId, userId);
+    if (!hasAccess) {
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    const dependencies = await taskService.getTaskDependencies(taskId);
+
+    res.json({
+      success: true,
+      data: dependencies,
+    });
+  },
+
+  // Task Reordering
+  async reorderTasks(req: Request, res: Response) {
+    const { listId, taskIds } = req.body;
+    const userId = req.user!.id;
+
+    // Get list to check project and workspace access
+    const list = await projectService.getListById(listId);
+    if (!list) {
+      throw new ApiError("List not found", HttpStatus.NOT_FOUND);
+    }
+
+    const project = await projectService.getProjectById(list.projectId);
+    if (!project) {
+      throw new ApiError("Project not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user has permission
+    const hasPermission = await workspaceService.checkUserPermission(
+      project.workspaceId,
+      userId,
+      ["OWNER", "ADMIN", "WRITE"]
+    );
+
+    if (!hasPermission) {
+      throw new ApiError("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    await taskService.reorderTasks(listId, taskIds);
+
+    res.json({
+      success: true,
+      message: "Tasks reordered successfully",
     });
   },
 };

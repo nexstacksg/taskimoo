@@ -7,8 +7,8 @@ import {
   updateProjectSchema,
   createListSchema,
   updateListSchema,
-  createSpaceSchema,
-  createFolderSchema,
+  // createSpaceSchema,
+  // createFolderSchema,
   projectParamsSchema,
   listParamsSchema,
   projectQuerySchema,
@@ -41,7 +41,10 @@ router.get(
 
 router.put(
   "/:projectId",
-  validateRequest({ ...projectParamsSchema.shape, ...updateProjectSchema.shape }),
+  validateRequest({
+    ...projectParamsSchema.shape,
+    ...updateProjectSchema.shape,
+  }),
   asyncHandler(projectController.updateProject)
 );
 

@@ -32,3 +32,27 @@ export const validate = (
 
   next();
 };
+
+export const validateRequest = (schema: any) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      if (schema.parse) {
+        // Zod schema
+        const data = {
+          ...req.params,
+          ...req.query,
+          ...req.body,
+        };
+        schema.parse(data);
+      }
+      next();
+    } catch (error: any) {
+      throw new ApiError(
+        "Validation failed",
+        422,
+        "VALIDATION_ERROR",
+        error.errors || error.message
+      );
+    }
+  };
+};

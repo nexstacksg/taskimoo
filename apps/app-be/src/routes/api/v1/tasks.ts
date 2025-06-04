@@ -100,4 +100,30 @@ router.put(
   asyncHandler(taskController.bulkUpdateTasks)
 );
 
+// Task Dependencies
+router.post(
+  "/:taskId/dependencies",
+  validateRequest({ ...taskParamsSchema.shape, ...addDependencySchema.shape }),
+  asyncHandler(taskController.addDependency)
+);
+
+router.delete(
+  "/:taskId/dependencies/:dependencyId",
+  validateRequest(taskParamsSchema),
+  asyncHandler(taskController.removeDependency)
+);
+
+router.get(
+  "/:taskId/dependencies",
+  validateRequest(taskParamsSchema),
+  asyncHandler(taskController.getDependencies)
+);
+
+// Task Reordering
+router.put(
+  "/reorder",
+  validateRequest(reorderTasksSchema),
+  asyncHandler(taskController.reorderTasks)
+);
+
 export default router;

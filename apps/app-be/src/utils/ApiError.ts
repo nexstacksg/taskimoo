@@ -1,4 +1,4 @@
-import { HttpStatus } from '@app/shared-types';
+import { HttpStatus } from "@app/shared-types";
 
 export class ApiError extends Error {
   statusCode: number;
