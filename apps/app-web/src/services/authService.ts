@@ -24,11 +24,11 @@ class AuthService {
       "/auth/login",
       data
     );
-    
+
     if (!response.data) {
       throw new Error("Invalid login response");
     }
-    
+
     return response.data;
   }
 
@@ -40,11 +40,11 @@ class AuthService {
       "/auth/register",
       data
     );
-    
+
     if (!response.data) {
       throw new Error("Invalid registration response");
     }
-    
+
     return response.data;
   }
 
@@ -59,9 +59,10 @@ class AuthService {
    * Get current user profile - uses internal API route that reads cookies
    */
   async getProfile(): Promise<IUserPublic> {
-    const response = await internalApi.get<ApiResponse<{ user: IUserPublic }>>(
-      "/auth/profile"
-    );
+    const response =
+      await internalApi.get<ApiResponse<{ user: IUserPublic }>>(
+        "/auth/profile"
+      );
 
     if (!response.data) {
       throw new Error("Invalid profile response");

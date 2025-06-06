@@ -1,12 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { useRouter } from "next/navigation";
 import authService from "@/services/authService";
 import { IUserPublic, RegisterRequest } from "@app/shared-types";
 
 // Create context without explicit type definition to avoid unused warnings
-const AuthContext = createContext<ReturnType<typeof useAuthProvider> | undefined>(undefined);
+const AuthContext = createContext<
+  ReturnType<typeof useAuthProvider> | undefined
+>(undefined);
 
 // Custom hook that provides auth functionality
 const useAuthProvider = () => {
@@ -41,16 +50,19 @@ const useAuthProvider = () => {
     return () => clearTimeout(timer);
   }, [checkAuth]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    try {
-      const authData = await authService.login({ email, password });
-      setUser(authData.user);
-      router.push("/");
-    } catch (error) {
-      const err = error as { message?: string };
-      throw new Error(err.message || "Invalid email or password");
-    }
-  }, [router]);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      try {
+        const authData = await authService.login({ email, password });
+        setUser(authData.user);
+        router.push("/");
+      } catch (error) {
+        const err = error as { message?: string };
+        throw new Error(err.message || "Invalid email or password");
+      }
+    },
+    [router]
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -63,16 +75,19 @@ const useAuthProvider = () => {
     }
   }, [router]);
 
-  const register = useCallback(async (data: RegisterRequest) => {
-    try {
-      const authData = await authService.register(data);
-      setUser(authData.user);
-      router.push("/");
-    } catch (error) {
-      const err = error as { message?: string };
-      throw new Error(err.message || "Registration failed");
-    }
-  }, [router]);
+  const register = useCallback(
+    async (data: RegisterRequest) => {
+      try {
+        const authData = await authService.register(data);
+        setUser(authData.user);
+        router.push("/");
+      } catch (error) {
+        const err = error as { message?: string };
+        throw new Error(err.message || "Registration failed");
+      }
+    },
+    [router]
+  );
 
   const refreshAuth = useCallback(async () => {
     setIsLoading(true);
@@ -86,7 +101,7 @@ const useAuthProvider = () => {
       login,
       logout,
       register,
-      refreshAuth
+      refreshAuth,
     }),
     [user, isLoading, login, logout, register, refreshAuth]
   );
@@ -104,10 +119,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const auth = useAuthProvider();
-  
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  );
+
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

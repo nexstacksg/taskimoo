@@ -1,5 +1,10 @@
 import { internalApi } from "./api";
-import { IUserPublic, ApiResponse, PaginationParams, PaginatedResponse } from "@app/shared-types";
+import {
+  IUserPublic,
+  ApiResponse,
+  PaginationParams,
+  PaginatedResponse,
+} from "@app/shared-types";
 
 interface UpdateProfileData {
   firstName?: string;
@@ -18,11 +23,11 @@ class UserService {
   async getMyProfile(): Promise<IUserPublic> {
     const response =
       await internalApi.get<ApiResponse<IUserPublic>>("/users/my-profile");
-    
+
     if (!response.data) {
       throw new Error("Invalid profile response");
     }
-    
+
     return response.data;
   }
 
@@ -34,11 +39,11 @@ class UserService {
       "/users/my-profile",
       data
     );
-    
+
     if (!response.data) {
       throw new Error("Invalid update response");
     }
-    
+
     return response.data;
   }
 
@@ -85,22 +90,24 @@ class UserService {
     const response = await internalApi.get<ApiResponse<IUserPublic>>(
       `/users/${userId}`
     );
-    
+
     if (!response.data) {
       throw new Error("Invalid user response");
     }
-    
+
     return response.data;
   }
 
   /**
    * List users (admin only)
    */
-  async listUsers(params?: PaginationParams & {
-    search?: string;
-    role?: string;
-    status?: string;
-  }): Promise<PaginatedResponse<IUserPublic>> {
+  async listUsers(
+    params?: PaginationParams & {
+      search?: string;
+      role?: string;
+      status?: string;
+    }
+  ): Promise<PaginatedResponse<IUserPublic>> {
     const queryParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -110,9 +117,9 @@ class UserService {
       });
     }
 
-    const response = await internalApi.get<ApiResponse<PaginatedResponse<IUserPublic>>>(
-      `/users?${queryParams.toString()}`
-    );
+    const response = await internalApi.get<
+      ApiResponse<PaginatedResponse<IUserPublic>>
+    >(`/users?${queryParams.toString()}`);
 
     if (!response.data) {
       throw new Error("Invalid users list response");

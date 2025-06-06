@@ -15,9 +15,17 @@ const eslintConfig = [
     rules: {
       // Enforce double quotes
       "quotes": ["error", "double", { "avoidEscape": true }],
-      // Warn on unused variables
-      "@typescript-eslint/no-unused-vars": "warn",
-      "no-unused-vars": "warn",
+      // Warn on unused variables, but allow unused parameters starting with _
+      "@typescript-eslint/no-unused-vars": ["warn", { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
+      "no-unused-vars": ["warn", { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
     }
   }
 ];

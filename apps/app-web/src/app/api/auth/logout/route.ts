@@ -17,7 +17,7 @@ export async function POST() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${accessToken.value}`,
           },
           body: JSON.stringify({ refreshToken: refreshToken.value }),
         });
